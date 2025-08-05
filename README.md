@@ -43,76 +43,23 @@ PA5 - входной сигнал управления тягой.
 
 PB10 - выход телеметрии.
 
+## 🚀 Кастомный бутлоадер и конфигуратор параметров
+
+Этот проект использует собственный бутлоадер и инструменты для настройки, не связанные с оригинальным AM32.
+К настройке доступны все параметры доступные в оригинальной прошивке.
+Под бутлоадер зарезервировано 8 килобайт памяти.
+
+## ⚙️ Использование проекта без кастомного бутлоадера
+Если вы хотите прошивать проект напрямую через ST-Link/OpenOCD (без использования встроенного бутлоадера), необходимо изменить адрес начала прошивки в Linker Script (.ld файле).
+
 ## 🐛 Известные проблемы
 
 Не работает DSHOT выше DSHOT300 (связано с отсутствием DMA для ECAP).
+Отсутсвует гибкая настройка делителя частоты PWM таймера для проигрывания мелодий (связано с ограничением периферии).
 
 ## 🤝 Как помочь проекту
 
 Тестирование на других платах.
 
 
-## Hardware
-AM32 currently has support for STSPIN32F0, STM32F051, STM32G071, GD32E230, AT32F415 and AT32F421.
-The CKS32F051 is not recommended due to too many random issues.
-Target compatibility List can be found [here](https://github.com/am32-firmware/AM32/blob/main/Inc/targets.h)
-
-
-## Installation & Bootloader
-
-To use AM32 firmware on a blank ESC, a bootloader must first be installed using an ST-LINK, GD-LINK , CMIS-DAP or AT-LINK.  THe bootloader will be dependant on the MCU used ont he esc . Choose the bootloader that matches the MCU type and signal input pin of the ESC.
-The compatibility chart has the bootloader pinouts listed.
-Current bootloaders can be found [here](https://github.com/am32-firmware/AM32-bootloader).
-
-After the bootloader has been installed the main firmware from can be installed either with the configuration tools and a Betaflight flight controller or a direct connection with a usb serial adapter modified for one wire.
-
-To update an existing AM32 bootloader an update tool can be found [here](https://github.com/am32-firmware/AM32-unlocker).
-
-## Support and Developers Channel
-There are two ways you can get support or participate in improving am32.
-We have a discord server here:
-
-https://discord.gg/h7ddYMmEVV
-
-Etiquette: Please wait around long enough for a reply - sometimes people are out flying, asleep or at work and can't answer immediately. 
-
-If you wish to support the project please join the Patreon.
-
-https://www.patreon.com/user?u=44228479
-
-
-## Sponsors
-The AM32 project would not have made this far without help from the following sponsors:
-
-Holmes Hobbies - https://holmeshobbies.com/ - The project would not be where it is today without the support of HH. Check out the Crawlmaster V2 for the best am32 experience!
-
-Repeat Robotics - https://repeat-robotics.com/ - Bringing Am32 esc's to the fighting robot community!
-
-Quaternium - https://www.quaternium.com/ - Firmware development support and hardware donations
-
-Airbot - Many hardware donations
-
-NeutronRC - For hardware, am32 promotion and schematics 
-
-Aikon - Hardware donations and schematics\
-Skystars  - For hardware and taking a chance on the first commercial am32 esc's\
-Diatone - Hardware donations\
-T-motor - Motor and Hardware donations\
-HLGRC  - Hardaware donations
-
-
-## Contributors
-A big thanks to all those who contributed time, advice and code to the AM32 project.\
-Un!t\
-Hugo Chiang (Dusking)\
-Micheal Keller (Mikeller)\
-ColinNiu\
-Jacob Walser
-
-And for feedback from pilots and drivers:\
-Jye Smith\
-Markus Gritsch\
-Voodoobrew
-
-(and many more)
 
