@@ -299,7 +299,7 @@ enum inputType {
     SERIAL_IN,
     EDTARM,
 };
-uint16_t DEAD_TIME = 30;
+uint16_t deadTime = DEAD_TIME;
 EEprom_t eepromBuffer;
 uint32_t eeprom_address = EEPROM_START_ADD; 
 char set_hysteris = 0;
@@ -619,7 +619,7 @@ void loadEEpromSettings()
         { // motor brake 1-9
             eepromBuffer.driving_brake_strength = 10;
         }
-        dead_time_override = DEAD_TIME + (150 - (eepromBuffer.driving_brake_strength * 10));
+        dead_time_override = deadTime + (150 - (eepromBuffer.driving_brake_strength * 10));
         if (dead_time_override > 200)
         {
             dead_time_override = 200;
@@ -1656,8 +1656,10 @@ typedef struct hardwareVersion_s
     char deviceId[12];
 } hardwareVersion_t;
 
+#ifndef NO_BOOTLOADER
 extern const uint8_t __device_info_start[];
 extern const uint8_t __firmware_info_start[];
+#endif
 
 static void FPUInit()
 {
@@ -1681,7 +1683,8 @@ int main()
     SystemCoreClockUpdate( );
     FPUInit();
     initAfterJump();
-    
+
+#ifndef NO_BOOTLOADER
     hardwareVersion_t hardwareInfo;
     read_flash_bin(&hardwareInfo, __device_info_start, sizeof(hardwareInfo));
 
@@ -1691,20 +1694,20 @@ int main()
     if((__firmware_version.major != firmware_version.major) || (__firmware_version.minor != firmware_version.minor)) {
         save_flash_nolib(&firmware_version,sizeof(firmware_version), __firmware_info_start);
     }
-
     if(hardwareInfo.deviceId[4] == '8')
     {
-        DEAD_TIME = 40;
+        deadTime = 40;
     }
     else if(hardwareInfo.deviceId[3] == '1')
     {
-        DEAD_TIME = 80;
+        deadTime = 80;
     }
 
-    gate_drive_offset = DEAD_TIME;
-    dead_time_override = DEAD_TIME;
-    minimum_duty_cycle = DEAD_TIME;
-    stall_protect_minimum_duty = DEAD_TIME;
+    gate_drive_offset = deadTime;
+    dead_time_override = deadTime;
+    minimum_duty_cycle = deadTime;
+    stall_protect_minimum_duty = deadTime;
+#endif
 
     initCorePeripherals();
     enableCorePeripherals();
@@ -1752,6 +1755,36 @@ int main()
 		stall_protect_minimum_duty = stall_protect_minimum_duty + 50;
 		min_startup_duty = min_startup_duty + 50;
 	}
+
+#ifdef NO_BOOTLOADER
+        eepromBuffer.variable_pwm = 1;
+        eepromBuffer.sine_mode_power = 5;
+        setVolume(7);
+        eepromBuffer.comp_pwm = 1;
+        //playStartupTune();
+        eepromBuffer.advance_level = 3;
+        motor_kv = 2200;
+        eepromBuffer.motor_poles = 14;
+        eepromBuffer.stall_protection = 0;
+        eepromBuffer.brake_on_stop = 1;
+        eepromBuffer.stuck_rotor_protection = 1;
+        eepromBuffer.drag_brake_strength = 1;
+        eepromBuffer.bi_direction = 0;
+        eepromBuffer.auto_advance = 0;
+        eepromBuffer.startup_power = 100;
+        eepromBuffer.rc_car_reverse = 0;
+        //LOW_VOLTAGE_CUTOFF = 1;
+        uint16_t minStartupDuty = 100;
+        min_startup_duty = (minStartupDuty + DEAD_TIME) * TIMER1_MAX_ARR / 2000;
+        minimum_duty_cycle = (minStartupDuty/ 2 + DEAD_TIME/3) * TIMER1_MAX_ARR / 2000 ;
+        stall_protect_minimum_duty = minimum_duty_cycle+10;
+        //eepromBuffer.use_sine_start = 1;
+        eepromBuffer.use_sine_start = 1;
+        servo_low_threshold = 1100;
+        servo_high_threshold = 1900;
+        dshot = 1;
+        servoPwm = 0;
+#endif
 
 #ifdef USE_CRSF_INPUT
 	inputSet = 1;

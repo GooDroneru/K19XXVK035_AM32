@@ -2,9 +2,9 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "launch",
+            "name": "Debug (No Bootloader)",
             "cwd": "${workspaceRoot}",
-            "executable": "${command:cmake.launchTargetPath}",
+            "executable": "${workspaceRoot}/build/1.0.0_no_bootloader.elf", 
             "request": "launch",
             "type": "cortex-debug",
             "servertype": "openocd",
@@ -13,7 +13,24 @@
             ],
             "device": "k1921vk035",
             "runToEntryPoint": "main",
-            // "rtos": "auto",
+            "searchDir": [
+                "${workspaceRoot}"
+            ],
+            "showDevDebugOutput": "raw",
+            "svdFile": "${workspaceRoot}/K1921VK035.svd"
+        },
+        {
+            "name": "Debug (With Bootloader)",
+            "cwd": "${workspaceRoot}",
+            "executable": "${workspaceRoot}/build/1.0.0_bootloader.elf", 
+            "request": "launch",
+            "type": "cortex-debug",
+            "servertype": "openocd",
+            "configFiles": [
+                "scripts/connect_stlink.cfg"
+            ],
+            "device": "k1921vk035",
+            "runToEntryPoint": "main",
             "searchDir": [
                 "${workspaceRoot}"
             ],

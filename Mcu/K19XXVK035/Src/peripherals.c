@@ -7,7 +7,7 @@
 #include "serial_telemetry.h"
 
 extern uint16_t counter;
-extern uint16_t DEAD_TIME;
+extern uint16_t deadTime;
 
 void initCorePeripherals(void)
 {
@@ -254,16 +254,16 @@ void PWM_TIM1_Init(void)  //PWM
     PWM2->AQCTLA_bit.CAU = PWM_AQCTLA_CAU_Clear;
     PWM2->AQCTLB_bit.PRD = PWM_AQCTLB_PRD_Clear;
     PWM2->AQCTLB_bit.CBU = PWM_AQCTLB_CBU_Set;
-    PWM0->DBRED = DEAD_TIME;
-    PWM0->DBFED = DEAD_TIME;
+    PWM0->DBRED = deadTime;
+    PWM0->DBFED = deadTime;
     PWM0->DBCTL_bit.OUTMODE = 0x03;
     PWM0->DBCTL_bit.POLSEL = 0x02;
-    PWM1->DBRED = DEAD_TIME;
-    PWM1->DBFED = DEAD_TIME;
+    PWM1->DBRED = deadTime;
+    PWM1->DBFED = deadTime;
     PWM1->DBCTL_bit.OUTMODE = 0x03;
     PWM1->DBCTL_bit.POLSEL = 0x02;
-    PWM2->DBRED = DEAD_TIME;
-    PWM2->DBFED = DEAD_TIME;
+    PWM2->DBRED = deadTime;
+    PWM2->DBFED = deadTime;
     PWM2->DBCTL_bit.OUTMODE = 0x03;
     PWM2->DBCTL_bit.POLSEL = 0x02;
     PWM0->DBCTL_bit.INMODE =  0;

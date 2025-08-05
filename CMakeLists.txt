@@ -29,6 +29,7 @@ ADD_DEFINITIONS(-DCKO_${CKO})
 
 set(PROJECT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 add_library(SOURCES INTERFACE)
+add_library(BOOTLOADER INTERFACE)
 
 #-- Include dirs ---------------------------------------------------------------
 
@@ -89,13 +90,35 @@ INTERFACE
 
 #-- Linker script --------------------------------------------------------------
 
-SET(LDSCRIPT ${CMAKE_SOURCE_DIR}/platform/Device/NIIET/K1921VK035/Source/GCC/K1921VK035.ld)
-SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -T ${LDSCRIPT} -Wl,-Map=${CMAKE_BINARY_DIR}/${PROJECT_NAME}.map -Wl,--print-memory-usage")
+set(LDSCRIPT_NO_BOOTLOADER "${CMAKE_SOURCE_DIR}/platform/Device/NIIET/K1921VK035/Source/GCC/K1921VK035_no_bootloader.ld")
+set(LDSCRIPT_WITH_BOOTLOADER "${CMAKE_SOURCE_DIR}/platform/Device/NIIET/K1921VK035/Source/GCC/K1921VK035_bootloader.ld")
+#SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -T ${LDSCRIPT} -Wl,-Map=${CMAKE_BINARY_DIR}/${PROJECT_NAME}.map -Wl,--print-memory-usage")
 
 target_compile_definitions(SOURCES INTERFACE 
     #__NO_SYSTEM_INIT
+    NO_BOOTLOADER
 )
 
-add_executable(1.0.0)
-target_link_libraries(1.0.0 SOURCES m)
-gcc_generate_bin_file(1.0.0 PRIVATE ${LINKER_SCRIPT})
+target_compile_definitions(BOOTLOADER INTERFACE 
+    #__NO_SYSTEM_INIT
+)
+
+add_executable(1.0.0_no_bootloader)
+target_link_libraries(1.0.0_no_bootloader SOURCES m)
+gcc_generate_bin_file(1.0.0_no_bootloader PRIVATE ${LDSCRIPT_NO_BOOTLOADER})
+target_link_options(1.0.0_no_bootloader PRIVATE
+    -T "${LDSCRIPT_NO_BOOTLOADER}"
+    -Wl,-Map=${CMAKE_BINARY_DIR}/1.0.0_no_bootloader.map
+    -Wl,--print-memory-usage
+)
+set_target_properties(1.0.0_no_bootloader PROPERTIES SUFFIX ".elf")
+
+add_executable(1.0.0_bootloader)
+target_link_libraries(1.0.0_bootloader SOURCES BOOTLOADER m)
+gcc_generate_bin_file(1.0.0_bootloader PRIVATE ${LDSCRIPT})
+target_link_options(1.0.0_bootloader PRIVATE
+    -T "${LDSCRIPT_WITH_BOOTLOADER}"
+    -Wl,-Map=${CMAKE_BINARY_DIR}/1.0.0_bootloader.map
+    -Wl,--print-memory-usage
+)
+set_target_properties(1.0.0_bootloader PROPERTIES SUFFIX ".elf")
