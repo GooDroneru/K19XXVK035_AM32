@@ -1,0 +1,104 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Read CFGWORD via OpenOCD",
+        "type": "shell",
+        "command": "openocd",
+        "args": [
+          "-f", "scripts/connect_stlink.cfg",
+          "-c", "k1921vk035 read nvr 0xC00",
+          "-c", "resume",
+          "-c", "exit"
+        ],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        },
+        "problemMatcher": []
+      },
+      {
+        "label": "Write CFGWORD NvrLoad via OpenOCD",
+        "type": "shell",
+        "command": "openocd",
+        "args": [
+          "-f", "scripts/connect_stlink.cfg",
+          "-c", "halt",
+          "-c", "k1921vk035 write nvr erase 0xC00 0xFFFFFFEF 0xFFFFFFFF",
+          "-c", "resume",
+          "-c", "exit"
+        ],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        },
+        "problemMatcher": []
+      },
+      {
+        "label": "Reset",
+        "type": "shell",
+        "command": "openocd",
+        "args": [
+          "-f", "scripts/connect_stlink.cfg",
+          "-c", "reset"
+        ],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        },
+        "problemMatcher": []
+      },
+      {
+        "label": "Disable SWD/JTAG",
+        "type": "shell",
+        "command": "openocd",
+        "args": [
+          "-f", "scripts/connect_stlink.cfg",
+          "-c", "halt",
+          "-c", "k1921vk035 write nvr erase 0xC00 0xFFFFFFFE 0xFFFFFFFF",
+          "-c", "resume",
+          "-c", "exit"
+        ],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        },
+        "problemMatcher": []
+      },
+      {
+        "label": "Enable SWD/JTAG",
+        "type": "shell",
+        "command": "openocd",
+        "args": [
+          "-f", "scripts/connect_stlink.cfg",
+          "-c", "halt",
+          "-c", "k1921vk035 write nvr erase 0xC00 0xFFFFFFFF 0xFFFFFFFF",
+          "-c", "resume",
+          "-c", "exit"
+        ],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        },
+        "problemMatcher": []
+      },
+      {
+        "label": "Full Flash Erase (SERVCTL)", //SERV PIN
+        "type": "shell",
+        "command": "openocd",
+        "args": [
+          "-f", "scripts/connect_stlink.cfg",
+          "-c", "halt",                      
+          "-c", "mmw 0x40040014 0x00000001 0xFFFFFFFF", 
+          "-c", "resume",                   
+          "-c", "sleep 1000",            
+          "-c", "exit"                    
+        ],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        },
+        "problemMatcher": []
+      }
+    ]
+  }

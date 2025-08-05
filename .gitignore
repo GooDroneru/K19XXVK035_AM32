@@ -1,19 +1,54 @@
-obj/
-downloads/
-tools/
-.vscode
-Keil_Projects/*.uvgui.*
-Keil_Projects/*.uvguix.*
-Keil_Projects/Objects
-Keil_Projects/RTE/*
-Keil_Projects/Listings
-*.bin
-*.elf
+# Prerequisites
 *.d
-*.hex
-*.log
-*~
-*.map
+
+# Object files
 *.o
-.DS_Store
-.vscode/settings.json
+*.ko
+*.obj
+*.elf
+
+# Linker output
+*.ilk
+*.map
+*.exp
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Libraries
+*.lib
+*.a
+*.la
+*.lo
+
+# Shared objects (inc. Windows DLLs)
+*.dll
+*.so
+*.so.*
+*.dylib
+
+# Executables
+*.exe
+*.out
+*.app
+*.i*86
+*.x86_64
+*.hex
+
+# Debug files
+*.dSYM/
+*.su
+*.idb
+*.pdb
+
+# Kernel Module Compile Results
+*.mod*
+*.cmd
+.tmp_versions/
+modules.order
+Module.symvers
+Mkfile.old
+dkms.conf
+
+/build/*

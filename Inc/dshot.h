@@ -25,6 +25,4 @@ extern char buffer_divider;
 extern uint8_t last_dshot_command;
 extern uint32_t commutation_interval;
 
-// int e_com_time;
-
 #endif /* INC_DSHOT_H_ */

@@ -1,0 +1,17 @@
+{
+    "cortex-debug.openocdPath": "${workspaceRoot}/openocd/bin/openocd.exe",
+    "cortex-debug.gdbPath": "${workspaceRoot}/Arm GNU Toolchain arm-none-eabi/12.2 mpacbti-rel1/bin/arm-none-eabi-gdb.exe",
+    "files.associations": {
+        "algorithm": "c",
+        "format": "c",
+        "compare": "c",
+        "k1921vk035.h": "c",
+        "plib035_mflash.h": "c",
+        "queue": "c",
+        "dshot.h": "c",
+        "crc32.h": "c",
+        "xmemory": "c",
+        "plib035_wdt.h": "c"
+    },
+    "cortex-debug.variableUseNaturalFormat": false
+}
