@@ -5,7 +5,7 @@
 
 void save_flash_nolib(uint8_t *data, uint16_t length, uint32_t add)
 {   
-    volatile uint32_t start_addr
+    volatile uint32_t start_addr;
     uint32_t data_to_FLASH[2];
 
     if(length < 8) {

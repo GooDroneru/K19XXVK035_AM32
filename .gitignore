@@ -52,3 +52,5 @@ Mkfile.old
 dkms.conf
 
 /build/*
+/xpack-openocd-k1921vk-0.12.0-k1921vk/*
+/Arm GNU Toolchain arm-none-eabi/*

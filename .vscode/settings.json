@@ -1,5 +1,5 @@
 {
-    "cortex-debug.openocdPath": "${workspaceRoot}/openocd/bin/openocd.exe",
+    "cortex-debug.openocdPath": "${workspaceRoot}/xpack-openocd-k1921vk-0.12.0-k1921vk/bin/openocd.exe",
     "cortex-debug.gdbPath": "${workspaceRoot}/Arm GNU Toolchain arm-none-eabi/12.2 mpacbti-rel1/bin/arm-none-eabi-gdb.exe",
     "files.associations": {
         "algorithm": "c",

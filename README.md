@@ -1,40 +1,55 @@
-# AM32-MultiRotor-ESC-firmware
-Firmware for ARM based speed controllers
+# AM32 Port for [К1946ВК035/К1921ВК035] 
 <p align="left">
   <a href="/LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-brightgreen" alt="GitHub license" /></a>
 </p>
 
-The AM32 firmware is designed for STM32 ARM processors to control a brushless motor (BLDC).
-The firmware is intended to be safe and fast with smooth fast startups and linear throttle. It is meant for use with multiple vehicle types and a flight controller. The firmware can also be built with support for crawlers. For crawler usage please read this wiki page [Crawler Hardware](https://github.com/AlkaMotors/AM32-MultiRotor-ESC-firmware/wiki/Crawler-Hardware-and-AM32)
+## 📜 **Лицензия**  
+Этот проект является портом [AM32](https://github.com/AlkaMotors/AM32) и распространяется под **GNU GPL v3.0**, как и оригинальный код.  
+Полный текст лицензии: [LICENSE](LICENSE).  
 
-## Features
+> ⚠ **Важно**: Любые производные работы должны соблюдать условия GPL-3.0, включая открытие исходного кода.  
 
-AM32 has the following features:
+> **Важно**: Это **неофициальный порт** [AM32](https://github.com/AlkaMotors/AM32) для [К1946ВК035/К1921ВК035].  
+> Основной репозиторий: [AM32](https://github.com/AlkaMotors/AM32).  
 
-- Firmware upgradable via betaflight passthrough, single wire serial or arduino
-- Servo PWM, Dshot(300, 600) motor protocol support
-- Bi-directional Dshot
-- KISS standard ESC telemetry
-- Variable PWM frequency
-- Sinusoidal startup mode, which is designed to get larger motors up to speed
-## Build instructions
-Download and install Keil community edition. Open the Keil project for the mcu you want in the "Keil projects" folder. Install any mcu packs if prompted. 
-Select the build target from the drop down box and build project 
+## 🔍 **Отличия от оригинального AM32**  
+- Поддержка **К1946ВК035/К1921ВК035**.  
+- Изменения в драйверах периферии.  
+- Адаптация под другую периферию: иные таймеры управления мотором, иные таймеры для обработки входных сигналов управления, иная модель управления flash-памятью.  
+- Сокращённый функционал: пока доступен только Dshot300.  
 
-## Firmware Release & Configuration Tool
+## 📥 **Установка и сборка**  
+### Требования  
+- Компилятор: [ARM-GCC](https://developer.arm.com/downloads/-/arm-gnu-toolchain-downloads/12-2-mpacbti-rel1)
+- Инструменты: [Cmake](https://cmake.org/download/), [ninja](https://ninja-build.org/), [openocd-k1921vk](https://github.com/DCVostok/openocd-k1921vk/releases)
+- IDE: [VScode](https://code.visualstudio.com/download)
+- SDK: [K1921VKx_SDK](https://gitflic.ru/project/niiet/k1921vkx_sdk) (уже в проекте)
 
-The latest release of the firmware can be found [here](https://am32.ca/downloads).
+## ⚙️ Поддерживаемые платы
 
-The primary configurator is the [AM32 Configurator](https://am32.ca)
-which supports web browser based configuration and firmware update.
+GD80V1	✅ Работает
+GD100V1	✅ Работает
+https://goodroneru.ru/
 
-You can also use a desktop configurator which you can download from here:
+## 📜 Принципиальная схема ESC (упрощённая версия)
 
-[WINDOWS](https://drive.google.com/file/d/16kaPek9umz7fQFunzBeW4pp2LgT6_E5o/view?usp=drive_link)
-[LINUX](https://drive.google.com/file/d/1QtSKwp3RT6sncPADsPkmdasGqNIk68HH/view?usp=sharing)
+![схема](images/Scheme.png)
 
-Alternately you can use the [Online-ESC Configurator](https://esc-configurator.com/) to flash or change settings with any web browser that supports web serial.
+PB7, PB6, PB5 - принимают сигналы внешних компараторов сравнивающих обратный ЭДС свободной фазы с напряжением общей точки всех фаз. [Более подробно](https://github.com/vladBaciu/Sensorless-BLDC-controller).
 
+PB0, PB1, PB2 - измерение напряжение батареи через делитель, измерение тока через диф усилитель, измерение температуры через NTC термистор.
+
+PA5 - входной сигнал управления тягой.
+
+PB10 - выход телеметрии.
+
+## 🐛 Известные проблемы
+
+Не работает DSHOT выше DSHOT300 (связано с отсутствием DMA для ECAP).
+
+## 🤝 Как помочь проекту
+
+Тестирование на других платах.
 
 
 ## Hardware
