@@ -40,9 +40,9 @@ target_include_directories(SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${CMAKE_SOURCE_DIR}/Inc
         ${CMAKE_SOURCE_DIR}/Mcu/K19XXVK035/Inc
-        ${CMAKE_CURRENT_SOURCE_DIR}/Platform/CMSIS/Core/Include/
-        ${CMAKE_CURRENT_SOURCE_DIR}/Platform/Device/NIIET/K1921VK035/Include/
-        ${CMAKE_CURRENT_SOURCE_DIR}/Platform/plib/inc/
+        ${CMAKE_CURRENT_SOURCE_DIR}/platform/CMSIS/Core/Include/
+        ${CMAKE_CURRENT_SOURCE_DIR}/platform/Device/NIIET/K1921VK035/Include/
+        ${CMAKE_CURRENT_SOURCE_DIR}/platform/plib/inc/
 )
 
 target_sources(SOURCES
