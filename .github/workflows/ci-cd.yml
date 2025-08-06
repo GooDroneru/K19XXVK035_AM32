@@ -32,13 +32,13 @@ jobs:
       - name: Configure and Build (No Bootloader)
         run: |
           mkdir -p build_no_bootloader && cd build_no_bootloader
-          cmake .. -DCMAKE_TOOLCHAIN_FILE=../arm-gcc-toolchain.cmake -DNO_BOOTLOADER
+          cmake .. -DCMAKE_TOOLCHAIN_FILE=../arm-gcc-toolchain.cmake -DNO_BOOTLOADER=ON
           cmake --build . --target 1.0.0_no_bootloader
 
       - name: Configure and Build (With Bootloader)
         run: |
           mkdir -p build_bootloader && cd build_bootloader
-          cmake .. -DCMAKE_TOOLCHAIN_FILE=../arm-gcc-toolchain.cmake
+          cmake .. -DCMAKE_TOOLCHAIN_FILE=../arm-gcc-toolchain.cmake -DNO_BOOTLOADER=OFF
           cmake --build . --target 1.0.0_bootloader
 
       - name: Upload Artifacts
