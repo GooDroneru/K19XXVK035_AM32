@@ -16,8 +16,8 @@ jobs:
       - name: Checkout code (with submodules if needed)
         uses: actions/checkout@v4
         with:
-          submodules: recursive  # Если platform является подмодулем
-
+          submodules: recursive 
+          
       - name: Install ARM GNU Toolchain
         run: |
           wget ${{ env.ARM_TOOLCHAIN_URL }} -O arm-gnu-toolchain.tar.xz

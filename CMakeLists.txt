@@ -33,13 +33,16 @@ add_library(BOOTLOADER INTERFACE)
 include(${CMAKE_CURRENT_SOURCE_DIR}/arm-gcc-toolchain.cmake)
 #-- Include dirs ---------------------------------------------------------------
 
-add_subdirectory(platform)
+#add_subdirectory(platform)
 
 target_include_directories(SOURCES
     INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${CMAKE_SOURCE_DIR}/Inc
         ${CMAKE_SOURCE_DIR}/Mcu/K19XXVK035/Inc
+        ${CMAKE_CURRENT_SOURCE_DIR}/Platform/CMSIS/Core/Include/
+        ${CMAKE_CURRENT_SOURCE_DIR}/Platform/Device/NIIET/K1921VK035/Include/
+        ${CMAKE_CURRENT_SOURCE_DIR}/Platform/plib/inc/
 )
 
 target_sources(SOURCES
@@ -79,14 +82,65 @@ target_sources(SOURCES
         Mcu/K19XXVK035/Inc/version.h
         Mcu/K19XXVK035/Inc/WS2812.h
         Mcu/K19XXVK035/Inc/K19xxVK035_it.h
+        
+        Platform/CMSIS/Core/Include/cmsis_armcc.h
+        Platform/CMSIS/Core/Include/cmsis_armclang.h
+        Platform/CMSIS/Core/Include/cmsis_cmcpp.h
+        Platform/CMSIS/Core/Include/cmsis_compiler.h
+        Platform/CMSIS/Core/Include/cmsis_gcc.h
+        Platform/CMSIS/Core/Include/cmsis_iccarm.h
+        Platform/CMSIS/Core/Include/cmsis_version.h
+        Platform/CMSIS/Core/Include/core_cm4.h
+        Platform/CMSIS/Core/Include/mpu_armv7.h
+        Platform/Device/NIIET/K1921VK035/Include/K1921VK035.h
+        Platform/Device/NIIET/K1921VK035/Include/system_K1921VK035.h
+        Platform/Device/NIIET/K1921VK035/Source/system_K1921VK035.c
+        Platform/Device/NIIET/K1921VK035/Source/GCC/startup_K1921VK035.S
+
+        Platform/plib/src/plib035_adc.c
+        Platform/plib/src/plib035_can.c
+        Platform/plib/src/plib035_dma.c
+        Platform/plib/src/plib035_ecap.c
+        Platform/plib/src/plib035_gpio.c
+        Platform/plib/src/plib035_i2c.c
+        Platform/plib/src/plib035_mflash.c
+        Platform/plib/src/plib035_pmu.c
+        Platform/plib/src/plib035_pwm.c
+        Platform/plib/src/plib035_qep.c
+        Platform/plib/src/plib035_rcu.c
+        Platform/plib/src/plib035_spi.c
+        Platform/plib/src/plib035_tmr.c
+        Platform/plib/src/plib035_uart.c
+        Platform/plib/src/plib035_wdt.c
+
+        Platform/plib/inc/plib035.h
+        Platform/plib/inc/plib035_adc.h
+        Platform/plib/inc/plib035_assert.h
+        Platform/plib/inc/plib035_can.h
+        Platform/plib/inc/plib035_conf.h
+        Platform/plib/inc/plib035_dma.h
+        Platform/plib/inc/plib035_ecap.h
+        Platform/plib/inc/plib035_gpio.h
+        Platform/plib/inc/plib035_i2c.h
+        Platform/plib/inc/plib035_mflash.h
+        Platform/plib/inc/plib035_pmu.h
+        Platform/plib/inc/plib035_pwm.h
+        Platform/plib/inc/plib035_qep.h
+        Platform/plib/inc/plib035_rcu.h
+        Platform/plib/inc/plib035_spi.h
+        Platform/plib/inc/plib035_tmr.h
+        Platform/plib/inc/plib035_uart.h
+        Platform/plib/inc/plib035_version.h
+        Platform/plib/inc/plib035_wdt.h
 )
+
 
 #-- Options --------------------------------------------------------------------
 
-target_link_libraries(SOURCES
-INTERFACE
-    K1921VK035_SDK
-)
+# target_link_libraries(SOURCES
+# INTERFACE
+#     K1921VK035_SDK
+# )
 
 #-- Linker script --------------------------------------------------------------
 
