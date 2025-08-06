@@ -20,7 +20,7 @@ jobs:
           echo "$(pwd)/arm-gnu-toolchain-12.2.mpacbti-rel1-x86_64-arm-none-eabi/bin" >> $GITHUB_PATH
 
       - name: Install CMake
-        uses: actions/setup-cmake@v2  # Используем v2 вместо v3
+        uses: actions/setup-cmake@v2
 
       - name: Check versions
         run: |
@@ -30,17 +30,17 @@ jobs:
       - name: Configure and Build (No Bootloader)
         run: |
           mkdir -p build_no_bootloader && cd build_no_bootloader
-          cmake .. -DCMAKE_TOOLCHAIN_FILE=../arm-gcc-toolchain.cmake -DBOOTLOADER=OFF
+          cmake .. -DCMAKE_TOOLCHAIN_FILE=../arm-gcc-toolchain.cmake -DNO_BOOTLOADER
           cmake --build . --target 1.0.0_no_bootloader
 
       - name: Configure and Build (With Bootloader)
         run: |
           mkdir -p build_bootloader && cd build_bootloader
-          cmake .. -DCMAKE_TOOLCHAIN_FILE=../arm-gcc-toolchain.cmake -DBOOTLOADER=ON
+          cmake .. -DCMAKE_TOOLCHAIN_FILE=../arm-gcc-toolchain.cmake
           cmake --build . --target 1.0.0_bootloader
 
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v4  # Используем v4 вместо v3
+        uses: actions/upload-artifact@v4
         with:
           name: firmware_binaries
           path: |
