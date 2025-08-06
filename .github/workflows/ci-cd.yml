@@ -20,7 +20,7 @@ jobs:
           echo "$(pwd)/arm-gnu-toolchain-12.2.mpacbti-rel1-x86_64-arm-none-eabi/bin" >> $GITHUB_PATH
 
       - name: Install CMake
-        uses: actions/setup-cmake@v3
+        uses: actions/setup-cmake@v2  # Используем v2 вместо v3
 
       - name: Check versions
         run: |
@@ -40,7 +40,7 @@ jobs:
           cmake --build . --target 1.0.0_bootloader
 
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4  # Используем v4 вместо v3
         with:
           name: firmware_binaries
           path: |
