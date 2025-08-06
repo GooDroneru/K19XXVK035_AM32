@@ -1,0 +1,48 @@
+name: ARM GCC CI/CD (Bootloader + No Bootloader)
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install ARM GNU Toolchain
+        run: |
+          wget https://developer.arm.com/-/media/Files/downloads/gnu/12.2.mpacbti-rel1/binrel/arm-gnu-toolchain-12.2.mpacbti-rel1-x86_64-arm-none-eabi.tar.xz
+          tar -xf arm-gnu-toolchain-12.2.mpacbti-rel1-x86_64-arm-none-eabi.tar.xz
+          echo "$(pwd)/arm-gnu-toolchain-12.2.mpacbti-rel1-x86_64-arm-none-eabi/bin" >> $GITHUB_PATH
+
+      - name: Install CMake
+        uses: actions/setup-cmake@v3
+
+      - name: Check versions
+        run: |
+          arm-none-eabi-gcc --version
+          cmake --version
+
+      - name: Configure and Build (No Bootloader)
+        run: |
+          mkdir -p build_no_bootloader && cd build_no_bootloader
+          cmake .. -DCMAKE_TOOLCHAIN_FILE=../arm-gcc-toolchain.cmake -DBOOTLOADER=OFF
+          cmake --build . --target 1.0.0_no_bootloader
+
+      - name: Configure and Build (With Bootloader)
+        run: |
+          mkdir -p build_bootloader && cd build_bootloader
+          cmake .. -DCMAKE_TOOLCHAIN_FILE=../arm-gcc-toolchain.cmake -DBOOTLOADER=ON
+          cmake --build . --target 1.0.0_bootloader
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: firmware_binaries
+          path: |
+            build_no_bootloader/1.0.0_no_bootloader.*
+            build_bootloader/1.0.0_bootloader.*

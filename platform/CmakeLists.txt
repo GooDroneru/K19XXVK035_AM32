@@ -62,12 +62,3 @@ INTERFACE
     plib/inc/plib035_wdt.h
 )
 
-function(gcc_generate_bin_file TargetName)
-    add_custom_command(
-        TARGET ${TargetName}
-        POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E echo "Generating flash image ${TargetName}.bin"
-        COMMAND ${CMAKE_OBJCOPY} -O binary ${TargetName}${CMAKE_EXECUTABLE_SUFFIX_C} ${TargetName}.bin
-        BYPRODUCTS ${TargetName}.bin
-    )
-endfunction()

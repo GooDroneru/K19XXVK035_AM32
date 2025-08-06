@@ -30,7 +30,7 @@ ADD_DEFINITIONS(-DCKO_${CKO})
 set(PROJECT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 add_library(SOURCES INTERFACE)
 add_library(BOOTLOADER INTERFACE)
-
+include(${CMAKE_CURRENT_SOURCE_DIR}/arm-gcc-toolchain.cmake)
 #-- Include dirs ---------------------------------------------------------------
 
 add_subdirectory(platform)
@@ -105,7 +105,7 @@ target_compile_definitions(BOOTLOADER INTERFACE
 
 add_executable(1.0.0_no_bootloader)
 target_link_libraries(1.0.0_no_bootloader SOURCES m)
-gcc_generate_bin_file(1.0.0_no_bootloader PRIVATE ${LDSCRIPT_NO_BOOTLOADER})
+gcc_generate_bin_file(TARGET 1.0.0_no_bootloader)
 target_link_options(1.0.0_no_bootloader PRIVATE
     -T "${LDSCRIPT_NO_BOOTLOADER}"
     -Wl,-Map=${CMAKE_BINARY_DIR}/1.0.0_no_bootloader.map
@@ -115,7 +115,7 @@ set_target_properties(1.0.0_no_bootloader PROPERTIES SUFFIX ".elf")
 
 add_executable(1.0.0_bootloader)
 target_link_libraries(1.0.0_bootloader SOURCES BOOTLOADER m)
-gcc_generate_bin_file(1.0.0_bootloader PRIVATE ${LDSCRIPT})
+gcc_generate_bin_file(TARGET 1.0.0_bootloader)
 target_link_options(1.0.0_bootloader PRIVATE
     -T "${LDSCRIPT_WITH_BOOTLOADER}"
     -Wl,-Map=${CMAKE_BINARY_DIR}/1.0.0_bootloader.map
