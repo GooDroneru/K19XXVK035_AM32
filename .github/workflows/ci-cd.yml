@@ -6,40 +6,54 @@ on:
   pull_request:
     branches: [ main ]
 
+env:
+  ARM_TOOLCHAIN_URL: https://developer.arm.com/-/media/Files/downloads/gnu/12.2.mpacbti-rel1/binrel/arm-gnu-toolchain-12.2.mpacbti-rel1-x86_64-arm-none-eabi.tar.xz
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout code (with submodules if needed)
         uses: actions/checkout@v4
+        with:
+          submodules: recursive  # Если platform является подмодулем
 
       - name: Install ARM GNU Toolchain
         run: |
-          wget https://developer.arm.com/-/media/Files/downloads/gnu/12.2.mpacbti-rel1/binrel/arm-gnu-toolchain-12.2.mpacbti-rel1-x86_64-arm-none-eabi.tar.xz
-          tar -xf arm-gnu-toolchain-12.2.mpacbti-rel1-x86_64-arm-none-eabi.tar.xz
+          wget ${{ env.ARM_TOOLCHAIN_URL }} -O arm-gnu-toolchain.tar.xz
+          tar -xf arm-gnu-toolchain.tar.xz
           echo "$(pwd)/arm-gnu-toolchain-12.2.mpacbti-rel1-x86_64-arm-none-eabi/bin" >> $GITHUB_PATH
 
-      - name: Install CMake
+      - name: Install CMake and ninja (faster builds)
         run: |
           sudo apt-get update
-          sudo apt-get install -y cmake
+          sudo apt-get install -y cmake ninja-build
 
-      - name: Show versions
+      - name: Verify project structure
         run: |
-          arm-none-eabi-gcc --version
-          cmake --version
+          ls -la
+          ls -la platform/
+          ls -la platform/CMakeLists.txt || echo "Platform CMakeLists.txt not found"
 
-      - name: Configure and Build (No Bootloader)
+      - name: Build No Bootloader version
         run: |
           mkdir -p build_no_bootloader && cd build_no_bootloader
-          cmake .. -DCMAKE_TOOLCHAIN_FILE=../arm-gcc-toolchain.cmake -DNO_BOOTLOADER=ON
-          cmake --build . --target 1.0.0_no_bootloader
+          cmake .. \
+            -G Ninja \
+            -DCMAKE_TOOLCHAIN_FILE=../arm-gcc-toolchain.cmake \
+            -DNO_BOOTLOADER=ON \
+            -DCMAKE_BUILD_TYPE=Release
+          cmake --build . --target 1.0.0_no_bootloader -- -j$(nproc)
 
-      - name: Configure and Build (With Bootloader)
+      - name: Build Bootloader version
         run: |
           mkdir -p build_bootloader && cd build_bootloader
-          cmake .. -DCMAKE_TOOLCHAIN_FILE=../arm-gcc-toolchain.cmake -DNO_BOOTLOADER=OFF
-          cmake --build . --target 1.0.0_bootloader
+          cmake .. \
+            -G Ninja \
+            -DCMAKE_TOOLCHAIN_FILE=../arm-gcc-toolchain.cmake \
+            -DNO_BOOTLOADER=OFF \
+            -DCMAKE_BUILD_TYPE=Release
+          cmake --build . --target 1.0.0_bootloader -- -j$(nproc)
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
