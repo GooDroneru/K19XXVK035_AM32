@@ -1,5 +1,5 @@
 #include "main.h"
-#include "K19XXVK035_it.h"
+#include "K19xxVK035_it.h"
 #include "targets.h"
 #include "ADC.h"
 #include "comparator.h"

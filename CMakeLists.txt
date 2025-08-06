@@ -54,7 +54,7 @@ target_sources(SOURCES
         Mcu/K19XXVK035/Src/IO.c
         Mcu/K19XXVK035/Src/phaseouts.c
         Mcu/K19XXVK035/Src/serial_telemetry.c
-        Mcu/K19XXVK035/Src/K19XXVK035_it.c
+        Mcu/K19XXVK035/Src/K19xxVK035_it.c
         Mcu/K19XXVK035/Src/peripherals.c
         Src/dshot.c
         Src/firmwareversion.c
@@ -81,7 +81,7 @@ target_sources(SOURCES
         Mcu/K19XXVK035/Inc/serial_telemetry.h
         Mcu/K19XXVK035/Inc/version.h
         Mcu/K19XXVK035/Inc/WS2812.h
-        Mcu/K19XXVK035/Inc/K19XXVK035_it.h
+        Mcu/K19XXVK035/Inc/K19xxVK035_it.h
         
         platform/CMSIS/Core/Include/cmsis_armcc.h
         platform/CMSIS/Core/Include/cmsis_armclang.h
