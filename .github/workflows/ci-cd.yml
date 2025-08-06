@@ -20,9 +20,11 @@ jobs:
           echo "$(pwd)/arm-gnu-toolchain-12.2.mpacbti-rel1-x86_64-arm-none-eabi/bin" >> $GITHUB_PATH
 
       - name: Install CMake
-        uses: actions/setup-cmake@v2
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake
 
-      - name: Check versions
+      - name: Show versions
         run: |
           arm-none-eabi-gcc --version
           cmake --version
