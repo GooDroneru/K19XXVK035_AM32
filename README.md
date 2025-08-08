@@ -25,7 +25,7 @@
 - IDE: [VScode](https://code.visualstudio.com/download)
 - SDK: [K1921VKx_SDK](https://gitflic.ru/project/niiet/k1921vkx_sdk) (уже в проекте)
 
-[Инструкция по сборке и прошивке](https://github.com/GooDroneru/K19XXVK035_AM32/tree/main/content)
+[Инструкция по сборке и прошивке](https://github.com/GooDroneru/K19XXVK035_AM32/tree/main/content/K19XXVK035_AM32.pdf)
 
 ## ⚙️ Поддерживаемые платы
 
