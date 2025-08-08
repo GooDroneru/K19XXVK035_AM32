@@ -39,6 +39,8 @@ https://goodroneru.ru/
 
 ![Схема](https://github.com/GooDroneru/K19XXVK035_AM32/blob/main/Images/scheme.jpg)
 
+![BEMF](https://github.com/GooDroneru/K19XXVK035_AM32/blob/main/Images/bemf.png)
+
 PB7, PB6, PB5 - принимают сигналы внешних компараторов сравнивающих обратный ЭДС свободной фазы с напряжением общей точки всех фаз. [Более подробно](https://github.com/vladBaciu/Sensorless-BLDC-controller).
 
 PB0, PB1, PB2 - измерение напряжение батареи через делитель, измерение тока через диф усилитель, измерение температуры через NTC термистор.
