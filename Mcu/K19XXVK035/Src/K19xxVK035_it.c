@@ -52,12 +52,12 @@ void HardFault_Handler(void)
 }
 
 
-void SysTick_Handler(void)
+__RAMFUNC void SysTick_Handler(void)
 {
     tenKhzRoutine();
 }
 
-void ADC_SEQ0_IRQHandler()
+__RAMFUNC void ADC_SEQ0_IRQHandler()
 {   
     ADC_SEQ_ITStatusClear(ADC_SEQ_Num_0);
     while (ADC_SEQ_GetFIFOLoad(ADC_SEQ_Num_0)) {
@@ -72,7 +72,7 @@ void ADC_SEQ0_IRQHandler()
     }
 }
 
-void GPIOB_IRQHandler()
+__RAMFUNC void GPIOB_IRQHandler()
 {
     if (step == 1 || step == 4)
     {   // c floating
@@ -98,7 +98,7 @@ void GPIOB_IRQHandler()
     }
 }
 
-void TMR0_IRQHandler(void)
+__RAMFUNC void TMR0_IRQHandler(void)
 {
     if(COM_TIMER->INTSTATUS_bit.INT && COM_TIMER->CTRL_bit.INTEN) {
         COM_TIMER->INTSTATUS_bit.INT = 1;
@@ -106,11 +106,15 @@ void TMR0_IRQHandler(void)
     }
 }
 
-void ECAP1_IRQHandler()
+__RAMFUNC void ECAP1_IRQHandler()
 {
     if(IC_TIMER_REGISTER->ECFLG_bit.CEVT1 && IC_TIMER_REGISTER->ECEINT_bit.CEVT1) {
         dma_buffer[counter++] = IC_TIMER_REGISTER->CAP0;
         dma_buffer[counter++] = IC_TIMER_REGISTER->CAP1;
+        // *(uint32_t*)(&dma_buffer[counter]) = *(uint32_t*)&IC_TIMER_REGISTER->CAP0;
+        // counter += 2;
+        // memcpy(&dma_buffer[counter], &IC_TIMER_REGISTER->CAP0, 2*sizeof(uint16_t));
+        // counter += 2;
         IC_TIMER_REGISTER->ECCLR_bit.INT = 1;
         IC_TIMER_REGISTER->PEINT_bit.PEINT = 1;
         IC_TIMER_REGISTER->ECCLR_bit.CEVT1 = 1;

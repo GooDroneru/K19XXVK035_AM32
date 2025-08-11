@@ -344,7 +344,7 @@ typedef struct version_s {
 
 version_t firmware_version = {
         .major = 1,
-        .minor = 0,
+        .minor = 1,
 };
 
 // const char filename[30] __attribute__((section(".file_name"))) = FILE_NAME;
@@ -783,7 +783,7 @@ void commutate()
     //e_com_time = ((commutation_intervals[0] + commutation_intervals[1] + commutation_intervals[2] + commutation_intervals[3] + commutation_intervals[4] + commutation_intervals[5]) + 4) >> 1; // COMMUTATION INTERVAL IS 0.5US INCREMENTS
 }
 
-void PeriodElapsedCallback()
+__RAMFUNC void PeriodElapsedCallback()
 {
     DISABLE_COM_TIMER_INT(); // disable interrupt
 	commutate();
@@ -807,7 +807,7 @@ void PeriodElapsedCallback()
 	}
 }
 
-void interruptRoutine()
+__RAMFUNC void interruptRoutine()
 {
     if (average_interval > 125)
     {
@@ -1252,7 +1252,7 @@ if (!stepper_sine && armed)
 #endif
 }
 
-void tenKhzRoutine()
+__RAMFUNC void tenKhzRoutine()
 {  // 20khz as of 2.00 to be renamed
     duty_cycle = duty_cycle_setpoint;
     tenkhzcounter++;

@@ -140,7 +140,7 @@ void computeServoInput()
 	}
 }
 
-void transfercomplete()
+__RAMFUNC void transfercomplete()
 {   
     if (armed && dshot_telemetry)
     {

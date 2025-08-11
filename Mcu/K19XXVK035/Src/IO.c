@@ -15,7 +15,7 @@
 
 uint8_t buffer_padding = 7;
 char ic_timer_prescaler = CPU_FREQUENCY_MHZ / 5;
-uint32_t dma_buffer[64] = { 0 };
+uint32_t dma_buffer[64] __attribute__((aligned(4))) = { 0 };
 char out_put = 0;
 extern uint16_t counter;
 extern uint16_t halfpulsetime;
