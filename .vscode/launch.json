@@ -4,7 +4,7 @@
         {
             "name": "Debug (No Bootloader)",
             "cwd": "${workspaceRoot}",
-            "executable": "${workspaceRoot}/build/1.0.0_no_bootloader.elf", 
+            "executable": "${workspaceRoot}/build/1.1.0_no_bootloader.elf", 
             "request": "launch",
             "type": "cortex-debug",
             "servertype": "openocd",
@@ -22,7 +22,7 @@
         {
             "name": "Debug (With Bootloader)",
             "cwd": "${workspaceRoot}",
-            "executable": "${workspaceRoot}/build/1.0.0_bootloader.elf", 
+            "executable": "${workspaceRoot}/build/1.1.0_bootloader.elf", 
             "request": "launch",
             "type": "cortex-debug",
             "servertype": "openocd",

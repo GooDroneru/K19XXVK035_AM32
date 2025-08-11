@@ -11,7 +11,8 @@
         "dshot.h": "c",
         "crc32.h": "c",
         "xmemory": "c",
-        "plib035_wdt.h": "c"
+        "plib035_wdt.h": "c",
+        "targets.h": "c"
     },
     "cortex-debug.variableUseNaturalFormat": false
 }
