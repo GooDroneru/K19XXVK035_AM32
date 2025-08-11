@@ -114,7 +114,7 @@ __RAMFUNC void ECAP1_IRQHandler()
         // dma_buffer[counter++] = IC_TIMER_REGISTER->CAP1;
         // *(uint32_t*)(&dma_buffer[counter]) = *(uint32_t*)&IC_TIMER_REGISTER->CAP0;
         // counter += 2;
-        memcpy(&dma_buffer[counter], &IC_TIMER_REGISTER->CAP0, 4*sizeof(uint16_t));
+        memcpy(&dma_buffer[counter], &IC_TIMER_REGISTER->CAP0, 2*sizeof(uint32_t));
         counter += 2;
         IC_TIMER_REGISTER->ECCLR_bit.INT = 1;
         IC_TIMER_REGISTER->PEINT_bit.PEINT = 1;
@@ -123,7 +123,7 @@ __RAMFUNC void ECAP1_IRQHandler()
     if(IC_TIMER_REGISTER->ECFLG_bit.CEVT3 && IC_TIMER_REGISTER->ECEINT_bit.CEVT3) {
         // dma_buffer[counter++] = IC_TIMER_REGISTER->CAP2;
         // dma_buffer[counter++] = IC_TIMER_REGISTER->CAP3;
-        memcpy(&dma_buffer[counter], &IC_TIMER_REGISTER->CAP2, 4*sizeof(uint16_t));
+        memcpy(&dma_buffer[counter], &IC_TIMER_REGISTER->CAP2, 2*sizeof(uint32_t));
         counter += 2;
         IC_TIMER_REGISTER->ECCLR_bit.INT = 1;
         IC_TIMER_REGISTER->PEINT_bit.PEINT = 1; 
