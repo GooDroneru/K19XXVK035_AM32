@@ -42,7 +42,7 @@ void changeToInput()
     IC_TIMER_REGISTER->ECCTL1_bit.CONTOST = 0;
     IC_TIMER_REGISTER->ECCTL1_bit.STOPWRAP = 3;
     IC_TIMER_REGISTER->ECCTL1_bit.REARM = 1;
-    IC_TIMER_REGISTER->ECEINT_bit.CEVT1 = 1;
+    //IC_TIMER_REGISTER->ECEINT_bit.CEVT1 = 1;
     IC_TIMER_REGISTER->ECEINT_bit.CEVT3 = 1;
     IC_TIMER_REGISTER->ECCTL0_bit.CAPLDEN = 1;
     NVIC_EnableIRQ(IC_TIMER_INT_VECTOR);
@@ -59,13 +59,13 @@ void changeToInput()
 
 
 
-void receiveDshotDma()
+__RAMFUNC void receiveDshotDma()
 {
     changeToInput();
     out_put = 0;
 }
 
-void changeToOutput()
+__RAMFUNC void changeToOutput()
 {
     NVIC_DisableIRQ(IC_TIMER_INT_VECTOR);
     IC_TIMER_REGISTER->ECCTL0 = 0;
@@ -87,7 +87,7 @@ void changeToOutput()
     out_put = 1;
 }
 
-void sendDshotDma()
+__RAMFUNC void sendDshotDma()
 {
     changeToOutput();
 }

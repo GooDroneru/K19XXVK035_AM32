@@ -40,7 +40,7 @@ uint16_t send_extended_dshot = 0;
 uint16_t processtime = 0;
 uint16_t halfpulsetime = 0;
 
-void computeDshotDMA()
+__RAMFUNC void computeDshotDMA()
 {
     dshot_frametime = dma_buffer[31] - dma_buffer[0];
     halfpulsetime = dshot_frametime >> 5;
@@ -197,7 +197,7 @@ void computeDshotDMA()
 	}
 }
 
-void make_dshot_package(uint16_t com_time)
+__RAMFUNC void make_dshot_package(uint16_t com_time)
 {
 	if (send_extended_dshot > 0)
 	{

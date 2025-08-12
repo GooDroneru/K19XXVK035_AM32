@@ -46,7 +46,7 @@ void computeMSInput()
 	}
 }
 
-void computeServoInput()
+__RAMFUNC void computeServoInput()
 {   
     uint16_t diffValue = (dma_buffer[1] - dma_buffer[0]) / 100;
     if ((diffValue > 800) && (diffValue < 2200))
@@ -281,7 +281,7 @@ void checkServo()
     }
 }
 
-void detectInput()
+__RAMFUNC void detectInput()
 {
     smallestnumber = 2000000;
     average_signal_pulse = 0;
