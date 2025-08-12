@@ -43,7 +43,7 @@ jobs:
             -DCMAKE_TOOLCHAIN_FILE=../arm-gcc-toolchain.cmake \
             -DNO_BOOTLOADER=ON \
             -DCMAKE_BUILD_TYPE=Release
-          cmake --build . --target 1.0.0_no_bootloader -- -j$(nproc)
+          cmake --build . --target 1.1.0_no_bootloader -- -j$(nproc)
 
       - name: Build Bootloader version
         run: |
@@ -53,12 +53,12 @@ jobs:
             -DCMAKE_TOOLCHAIN_FILE=../arm-gcc-toolchain.cmake \
             -DNO_BOOTLOADER=OFF \
             -DCMAKE_BUILD_TYPE=Release
-          cmake --build . --target 1.0.0_bootloader -- -j$(nproc)
+          cmake --build . --target 1.1.0_bootloader -- -j$(nproc)
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: firmware_binaries
           path: |
-            build_no_bootloader/1.0.0_no_bootloader.*
-            build_bootloader/1.0.0_bootloader.*
+            build_no_bootloader/1.1.0_no_bootloader.*
+            build_bootloader/1.1.0_bootloader.*
