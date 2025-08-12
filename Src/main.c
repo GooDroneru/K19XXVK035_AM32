@@ -1696,7 +1696,7 @@ int main()
     }
     if(hardwareInfo.deviceId[4] == '8')
     {
-        deadTime = 40;
+        deadTime = 25; //4.7Rg
     }
     else if(hardwareInfo.deviceId[3] == '1')
     {
@@ -1757,12 +1757,12 @@ int main()
 	}
 
 #ifdef NO_BOOTLOADER
-        eepromBuffer.variable_pwm = 1;
+        eepromBuffer.variable_pwm = 0;
         eepromBuffer.sine_mode_power = 5;
         setVolume(7);
         eepromBuffer.comp_pwm = 1;
         //playStartupTune();
-        eepromBuffer.advance_level = 3;
+        eepromBuffer.advance_level = 2;
         motor_kv = 2200;
         eepromBuffer.motor_poles = 14;
         eepromBuffer.stall_protection = 0;
