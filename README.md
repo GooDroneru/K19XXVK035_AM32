@@ -71,7 +71,7 @@ PB10 - выход телеметрии.
 
 ✉ Email: vgtutf081@gmail.com
 
-💬 Telegram: t.me/GoodRoneRnD
+💬 Telegram: [t.me/GoodRoneRnD](https://t.me/GooDroneRnD)
 
 
 
