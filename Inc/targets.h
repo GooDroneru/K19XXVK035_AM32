@@ -63,7 +63,7 @@
 #define NIIET
 #define FILE_NAME               "K19xxVK035"
 #define FIRMWARE_NAME           "VK035_AM32"
-#define DEAD_TIME               40 
+#define DEAD_TIME               25 
 #define HARDWARE_GROUP_K19xxVK035
 #define TARGET_VOLTAGE_DIVIDER  157
 #endif
