@@ -1694,13 +1694,13 @@ int main()
     if((__firmware_version.major != firmware_version.major) || (__firmware_version.minor != firmware_version.minor)) {
         save_flash_nolib(&firmware_version,sizeof(firmware_version), __firmware_info_start);
     }
-    if(hardwareInfo.deviceId[4] == '8')
+    if(hardwareInfo.deviceId[4] == '8') //20R
     {
-        deadTime = 25; //4.7Rg
+        deadTime = 45;
     }
-    else if(hardwareInfo.deviceId[3] == '1')
+    else if(hardwareInfo.deviceId[3] == '1') //20R
     {
-        deadTime = 80;
+        deadTime = 110;
     }
 
     gate_drive_offset = deadTime;
