@@ -680,7 +680,6 @@ void loadEEpromSettings()
             low_rpm_throttle_limit = 0;
         }
 
-        eepromBuffer.motor_poles = 14;
         low_rpm_level = motor_kv / 100 / (32 / eepromBuffer.motor_poles);
         high_rpm_level = motor_kv / 12 / (32 / eepromBuffer.motor_poles);				
     }
@@ -1505,7 +1504,7 @@ void processDshot()
 
 void advanceincrement()
 {
-    if (forward)
+    if (!forward)
     {
         phase_A_position++;
         if (phase_A_position > 359)
@@ -1656,7 +1655,7 @@ typedef struct hardwareVersion_s
     char deviceId[12];
 } hardwareVersion_t;
 
-#ifndef NO_BOOTLOADER
+#ifdef BOOTLOADER
 extern const uint8_t __device_info_start[];
 extern const uint8_t __firmware_info_start[];
 #endif
@@ -1684,13 +1683,11 @@ int main()
     FPUInit();
     initAfterJump();
 
-#ifndef NO_BOOTLOADER
+#ifdef BOOTLOADER
     hardwareVersion_t hardwareInfo;
-    read_flash_bin(&hardwareInfo, __device_info_start, sizeof(hardwareInfo));
-
     version_t __firmware_version;
     read_flash_bin(&__firmware_version, __firmware_info_start, sizeof(__firmware_version));
-
+    read_flash_bin(&hardwareInfo, __device_info_start, sizeof(hardwareInfo));
     if((__firmware_version.major != firmware_version.major) || (__firmware_version.minor != firmware_version.minor)) {
         save_flash_nolib(&firmware_version,sizeof(firmware_version), __firmware_info_start);
     }
@@ -1700,7 +1697,7 @@ int main()
     }
     else if(hardwareInfo.deviceId[3] == '1') //20R
     {
-        deadTime = 110;
+        deadTime = 70;
     }
 
     gate_drive_offset = deadTime;
@@ -1756,7 +1753,7 @@ int main()
 		min_startup_duty = min_startup_duty + 50;
 	}
 
-#ifdef NO_BOOTLOADER
+#ifndef BOOTLOADER
         eepromBuffer.variable_pwm = 0;
         eepromBuffer.sine_mode_power = 5;
         setVolume(7);

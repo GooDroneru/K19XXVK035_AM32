@@ -19,12 +19,13 @@ ENTRY(Reset_Handler)
 SECTIONS
 {	
 	.firmware_version :
-		{
+	{
 		. = ALIGN(1);
 		__firmware_info_start = .;   /* Запоминаем начало секции */
 		KEEP (*(.firmware_info))     /* Сохраняем секцию, даже если не используется */
 		__firmware_info_end = .;     /* Конец секции (опционально) */
-		} >FIRMWARE_VERSION
+	} >FIRMWARE_VERSION
+
 
 	.device_type :
 	{

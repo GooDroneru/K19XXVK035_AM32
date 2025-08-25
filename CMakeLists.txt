@@ -150,11 +150,12 @@ set(LDSCRIPT_WITH_BOOTLOADER "${CMAKE_SOURCE_DIR}/platform/Device/NIIET/K1921VK0
 
 target_compile_definitions(SOURCES INTERFACE 
     #__NO_SYSTEM_INIT
-    NO_BOOTLOADER
+    #BOOTLOADER
 )
 
 target_compile_definitions(BOOTLOADER INTERFACE 
     #__NO_SYSTEM_INIT
+    BOOTLOADER
 )
 
 add_executable(1.1.0_no_bootloader)
