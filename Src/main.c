@@ -1697,7 +1697,7 @@ int main()
     }
     else if(hardwareInfo.deviceId[3] == '1') //20R
     {
-        deadTime = 70;
+        deadTime = 90;
     }
 
     gate_drive_offset = deadTime;
