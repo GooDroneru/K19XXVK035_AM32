@@ -77,23 +77,23 @@ __RAMFUNC void GPIOB_IRQHandler()
 {
     if (step == 1 || step == 4)
     {   // c floating
-        if(GPIOB->INTSTATUS_bit.PHASE_C_COMP && COMPARATOR_REGISTER->DENSET_bit.PHASE_C_COMP && COMPARATOR_REGISTER->INTENSET_bit.PHASE_C_COMP) {
-            GPIOB->INTSTATUS_bit.PHASE_C_COMP = 1;
+        if(COMPARATOR_REGISTER->INTSTATUS_bit.PHASE_C_COMP && COMPARATOR_REGISTER->DENSET_bit.PHASE_C_COMP && COMPARATOR_REGISTER->INTENSET_bit.PHASE_C_COMP) {
+            COMPARATOR_REGISTER->INTSTATUS_bit.PHASE_C_COMP = 1;
             interruptRoutine();
         }
     }
     if (step == 2 || step == 5)
     {   // a floating
-        if(GPIOB->INTSTATUS_bit.PHASE_A_COMP && COMPARATOR_REGISTER->DENSET_bit.PHASE_A_COMP && COMPARATOR_REGISTER->INTENSET_bit.PHASE_C_COMP) {
-            GPIOB->INTSTATUS_bit.PHASE_A_COMP = 1;
+        if(COMPARATOR_REGISTER->INTSTATUS_bit.PHASE_A_COMP && COMPARATOR_REGISTER->DENSET_bit.PHASE_A_COMP && COMPARATOR_REGISTER->INTENSET_bit.PHASE_C_COMP) {
+            COMPARATOR_REGISTER->INTSTATUS_bit.PHASE_A_COMP = 1;
             interruptRoutine();
         }
 
     }
     if (step == 3 || step == 6)
     {   // b floating
-        if(GPIOB->INTSTATUS_bit.PHASE_B_COMP && COMPARATOR_REGISTER->DENSET_bit.PHASE_B_COMP && COMPARATOR_REGISTER->INTENSET_bit.PHASE_C_COMP) {
-            GPIOB->INTSTATUS_bit.PHASE_B_COMP = 1;
+        if(COMPARATOR_REGISTER->INTSTATUS_bit.PHASE_B_COMP && COMPARATOR_REGISTER->DENSET_bit.PHASE_B_COMP && COMPARATOR_REGISTER->INTENSET_bit.PHASE_C_COMP) {
+            COMPARATOR_REGISTER->INTSTATUS_bit.PHASE_B_COMP = 1;
             interruptRoutine();
         }
     }
@@ -103,11 +103,11 @@ __RAMFUNC void TMR0_IRQHandler(void)
 {
     if(COM_TIMER->INTSTATUS_bit.INT && COM_TIMER->CTRL_bit.INTEN) {
         COM_TIMER->INTSTATUS_bit.INT = 1;
-        PeriodElapsedCallback( );
+        PeriodElapsedCallback();
     }
 }
 
-__RAMFUNC void ECAP1_IRQHandler()
+__RAMFUNC void ECAP0_IRQHandler()
 {
 
     if(IC_TIMER_REGISTER->ECFLG_bit.CEVT3/* && IC_TIMER_REGISTER->ECEINT_bit.CEVT3*/) {

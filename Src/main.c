@@ -583,7 +583,7 @@ void loadEEpromSettings()
         if (eepromBuffer.beep_volume > 11)
         {
             setVolume(5);
-        } 
+        }
         else
         {
             setVolume(eepromBuffer.beep_volume);
@@ -681,7 +681,7 @@ void loadEEpromSettings()
         }
 
         low_rpm_level = motor_kv / 100 / (32 / eepromBuffer.motor_poles);
-        high_rpm_level = motor_kv / 12 / (32 / eepromBuffer.motor_poles);				
+        high_rpm_level = motor_kv / 12 / (32 / eepromBuffer.motor_poles);	
     }
     reverse_speed_threshold = map(motor_kv, 300, 3000, 1000, 500);
 }
@@ -2012,7 +2012,7 @@ int main()
         ADC_DMA_Callback();
         ADC_SEQ_SwStartCmd();
         degrees_celsius = getConvertedDegrees();
-        battery_voltage = ((7 * battery_voltage) + ((ADC_raw_volts * 3300 / 4095 * VOLTAGE_DIVIDER) / 100)) >> 3;
+        battery_voltage = (/*(7 * battery_voltage) + */((ADC_raw_volts * 3300 / 4095 * VOLTAGE_DIVIDER) / 100))/* >> 3*/;
         smoothed_raw_current = getSmoothedCurrent();
         actual_current = ((smoothed_raw_current * 3300 / 41) - (CURRENT_OFFSET * 100)) / (MILLIVOLT_PER_AMP);
         if (actual_current < 0)

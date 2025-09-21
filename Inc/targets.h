@@ -29,7 +29,7 @@
 //define  DT120_G071
 //#define FD6288_L103
 //#define FD6288_V203
-#define K19xxVK035
+#define K19xxVK035_CS
 //#define GD80A
 //#define GD100A
 #endif
@@ -65,7 +65,17 @@
 #define FIRMWARE_NAME           "VK035_AM32"
 #define DEAD_TIME               45 
 #define HARDWARE_GROUP_K19xxVK035
-#define TARGET_VOLTAGE_DIVIDER  157
+#define TARGET_VOLTAGE_DIVIDER  159
+#endif
+
+#ifdef K19xxVK035_CS
+#define NIIET
+#define FILE_NAME               "K19xxVK035"
+#define FIRMWARE_NAME           "VK035_AM32"
+#define DEAD_TIME               45 
+#define HARDWARE_GROUP_K19xxVK035_A
+#define TARGET_VOLTAGE_DIVIDER  159
+#define INVERTED_COMPARATOR
 #endif
 
 /****************************      F051 Targets ************************************/
@@ -552,7 +562,7 @@
 
 #endif
 
-/************************************ V203 Hardware Groups ****************************/
+/************************************ K19xxVK035 Hardware Groups ****************************/
 #ifdef HARDWARE_GROUP_K19xxVK035
 
 #define MCU_K19xxVK035
@@ -581,6 +591,36 @@
 #define PHASE_C_GPIO_PORT_HIGH  GPIOA
 
 #endif
+
+#ifdef HARDWARE_GROUP_K19xxVK035_A
+
+#define MCU_K19xxVK035
+#define INPUT_PIN_PORT 			GPIOA
+#define INPUT_PIN 				GPIO_Pin_4
+#define IC_TIMER_REGISTER       ECAP0
+#define IC_TIMER_INT_VECTOR     ECAP0_IRQn
+
+
+#define INPUT_DMA_CHANNEL       DMA1_Channel5
+#define IC_DMA_IRQ_NAME         DMA1_Channel5_IRQn
+
+#define PHASE_A_GPIO_LOW        GPIO_Pin_1
+#define PHASE_A_GPIO_PORT_LOW   GPIOB
+#define PHASE_A_GPIO_HIGH       GPIO_Pin_10
+#define PHASE_A_GPIO_PORT_HIGH  GPIOA
+
+#define PHASE_B_GPIO_LOW        GPIO_Pin_0
+#define PHASE_B_GPIO_PORT_LOW   GPIOB
+#define PHASE_B_GPIO_HIGH       GPIO_Pin_9
+#define PHASE_B_GPIO_PORT_HIGH  GPIOA
+
+#define PHASE_C_GPIO_LOW        GPIO_Pin_7
+#define PHASE_C_GPIO_PORT_LOW   GPIOA
+#define PHASE_C_GPIO_HIGH       GPIO_Pin_8
+#define PHASE_C_GPIO_PORT_HIGH  GPIOA
+
+#endif
+
 
 /*********************************** F051 Hardware Groups ****************************/
 

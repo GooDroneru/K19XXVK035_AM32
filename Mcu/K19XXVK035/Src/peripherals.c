@@ -157,11 +157,20 @@ void setDutyCycleAll(uint16_t newdc){
 
 void resetInputCaptureTimer()
 {
+#if defined HARDWARE_GROUP_K19xxVK035
   ECAP2->ECCTL0_bit.CAPLDEN = 0;
   ECAP2->TSCTR = 0;
   ECAP2->ECCTL1_bit.REARM = 1;
   counter = 0;
   ECAP2->ECCTL0_bit.CAPLDEN = 1;
+#elif defined HARDWARE_GROUP_K19xxVK035_A
+  ECAP0->ECCTL0_bit.CAPLDEN = 0;
+  ECAP0->TSCTR = 0;
+  ECAP0->ECCTL1_bit.REARM = 1;
+  counter = 0;
+  ECAP0->ECCTL0_bit.CAPLDEN = 1;
+#endif
+
 }
 
 void setPWMCompare1(uint16_t compareone)
@@ -199,6 +208,7 @@ void ALL_COMP_Init(void)
 {
     RCU->HCLKCFG_bit.GPIOBEN = 1;
     RCU->HRSTCFG_bit.GPIOBEN = 1;
+  #if defined HARDWARE_GROUP_K19xxVK035
     GPIOB->DENSET_bit.PIN4 = 1;
     GPIOB->DENSET_bit.PIN5 = 1;
     GPIOB->DENSET_bit.PIN6 = 1;
@@ -208,6 +218,18 @@ void ALL_COMP_Init(void)
     GPIOB->INTTYPESET_bit.PIN4 = 1;
     GPIOB->INTTYPESET_bit.PIN5 = 1;
     GPIOB->INTTYPESET_bit.PIN6 = 1;
+  #elif defined HARDWARE_GROUP_K19xxVK035_A
+    GPIOB->DENSET_bit.PIN5 = 1;
+    GPIOB->DENSET_bit.PIN6 = 1;
+    GPIOB->DENSET_bit.PIN7 = 1;
+    GPIOB->PULLMODE_bit.PIN5 = 0x01;
+    GPIOB->PULLMODE_bit.PIN6 = 0x01;
+    GPIOB->PULLMODE_bit.PIN7 = 0x01;
+    GPIOB->INTTYPESET_bit.PIN5 = 1;
+    GPIOB->INTTYPESET_bit.PIN6 = 1;
+    GPIOB->INTTYPESET_bit.PIN7 = 1;
+  #endif
+
 }
 
 void MX_IWDG_Init(void)
@@ -358,7 +380,8 @@ void ALL_GPIO_Init(void)
 
 void UN_TIM2_Init(void) 
 {
-    RCU->OSICFG_bit.CAL = 588;
+    // RCU->OSICFG_bit.CAL = 588;
+#if defined HARDWARE_GROUP_K19xxVK035
     RCU->PCLKCFG_bit.ECAP1EN = 1;
     RCU->PRSTCFG_bit.ECAP1EN = 1;
     RCU->HCLKCFG_bit.GPIOAEN = 1;
@@ -366,6 +389,16 @@ void UN_TIM2_Init(void)
     SIU->REMAPAF_bit.ECAP1EN = 1;
     GPIOA->DENSET_bit.PIN5 = 1;
     GPIOA->ALTFUNCSET_bit.PIN5 = 1;
+#elif defined HARDWARE_GROUP_K19xxVK035_A
+    RCU->PCLKCFG_bit.ECAP0EN = 1;
+    RCU->PRSTCFG_bit.ECAP0EN = 1;
+    RCU->HCLKCFG_bit.GPIOAEN = 1;
+    RCU->HRSTCFG_bit.GPIOAEN = 1;
+    SIU->REMAPAF_bit.ECAP0EN = 1;
+    GPIOA->DENSET_bit.PIN4 = 1;
+    GPIOA->ALTFUNCSET_bit.PIN4 = 1;
+#endif
+
     IC_TIMER_REGISTER->ECCTL0_bit.CAPLDEN = 0;
     IC_TIMER_REGISTER->ECCTL0_bit.CAP1POL = 1;
     IC_TIMER_REGISTER->ECCTL0_bit.CAP3POL = 1;
