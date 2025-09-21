@@ -358,7 +358,6 @@ void ALL_GPIO_Init(void)
 
 void UN_TIM2_Init(void) 
 {
-    RCU->OSICFG_bit.CAL = 588;
     RCU->PCLKCFG_bit.ECAP1EN = 1;
     RCU->PRSTCFG_bit.ECAP1EN = 1;
     RCU->HCLKCFG_bit.GPIOAEN = 1;
