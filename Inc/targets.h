@@ -65,7 +65,7 @@
 #define FIRMWARE_NAME           "VK035_AM32"
 #define DEAD_TIME               45 
 #define HARDWARE_GROUP_K19xxVK035
-#define TARGET_VOLTAGE_DIVIDER  157
+#define TARGET_VOLTAGE_DIVIDER  159
 #endif
 
 /****************************      F051 Targets ************************************/
