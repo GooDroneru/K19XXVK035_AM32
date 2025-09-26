@@ -11,9 +11,10 @@
 uint8_t aTxBuffer[10];
 uint8_t nbDataToTransmit = sizeof(aTxBuffer);
 
+UART_Init_TypeDef UART_InitStruct;
+
 void telem_UART_Init(void)
 {
-    UART_Init_TypeDef UART_InitStruct;
     RCU_AHBClkCmd(RCU_AHBClk_GPIOB, ENABLE);
     RCU_AHBRstCmd(RCU_AHBRst_GPIOB, ENABLE);
     GPIO_AltFuncCmd(GPIOB, GPIO_Pin_10, ENABLE);
@@ -27,10 +28,15 @@ void telem_UART_Init(void)
     UART_Init(UART0, &UART_InitStruct);
     UART0->LCRH_bit.FEN = 1;
     UART_Cmd(UART0, ENABLE);
+    UART0->IMSC_bit.TDIM = 1;
+    __NVIC_EnableIRQ(UART0_TX_IRQn);  
+    NVIC_SetPriority(UART0_TX_IRQn, 0x6);
 }
 
 void send_telem_DMA()
-{
+{   
+    GPIO_AltFuncCmd(GPIOB, GPIO_Pin_10, ENABLE);
+    GPIO_DigitalCmd(GPIOB, GPIO_Pin_10, ENABLE);
     for(uint8_t i = 0; i < nbDataToTransmit; i++) {
         UART0->DR = aTxBuffer[i];
     }
