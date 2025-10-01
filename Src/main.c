@@ -344,7 +344,7 @@ typedef struct version_s {
 
 version_t firmware_version = {
         .major = 1,
-        .minor = 1,
+        .minor = 2,
 };
 
 // const char filename[30] __attribute__((section(".file_name"))) = FILE_NAME;
