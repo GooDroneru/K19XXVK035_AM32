@@ -52,10 +52,13 @@ void HardFault_Handler(void)
     }
 }
 
-void UART0_TX_IRQHandler(void)
-{
-    GPIO_AltFuncCmd(GPIOB, GPIO_Pin_10, DISABLE);
-    GPIO_DigitalCmd(GPIOB, GPIO_Pin_10, DISABLE);
+void UART0_TD_IRQHandler(void)
+{      
+    if(UART0->RIS_bit.TDRIS) {
+        UART0->ICR_bit.TDIC = 1;
+        GPIOB->PULLMODE_bit.PIN10 = 1;
+        GPIO_AltFuncCmd(GPIOB, GPIO_Pin_10, DISABLE);
+    }
 }
 
 __RAMFUNC void SysTick_Handler(void)
