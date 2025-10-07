@@ -1781,6 +1781,7 @@ int main()
         servo_high_threshold = 1900;
         dshot = 1;
         servoPwm = 0;
+        EDT_ARMED = 1;
 #endif
 
 #ifdef USE_CRSF_INPUT
