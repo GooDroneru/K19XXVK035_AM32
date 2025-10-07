@@ -157,11 +157,11 @@ void setDutyCycleAll(uint16_t newdc){
 
 void resetInputCaptureTimer()
 {
-  ECAP2->ECCTL0_bit.CAPLDEN = 0;
-  ECAP2->TSCTR = 0;
-  ECAP2->ECCTL1_bit.REARM = 1;
+  IC_TIMER_REGISTER->ECCTL0_bit.CAPLDEN = 0;
+  IC_TIMER_REGISTER->TSCTR = 0;
+  IC_TIMER_REGISTER->ECCTL1_bit.REARM = 1;
   counter = 0;
-  ECAP2->ECCTL0_bit.CAPLDEN = 1;
+  IC_TIMER_REGISTER->ECCTL0_bit.CAPLDEN = 1;
 }
 
 void setPWMCompare1(uint16_t compareone)
