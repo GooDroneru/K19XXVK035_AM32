@@ -28,7 +28,7 @@ void telem_UART_Init(void)
     UART_Init(UART0, &UART_InitStruct);
     UART0->LCRH_bit.FEN = 1;
     UART0->IMSC_bit.TDIM = 1;
-    UART0->IMSC_bit.TXIM = 1;
+    //UART0->IMSC_bit.TXIM = 1;
     UART_AutoBaudConfig(UART0, 115200);
     UART_Cmd(UART0, ENABLE);
     __NVIC_EnableIRQ(UART0_TD_IRQn);  
