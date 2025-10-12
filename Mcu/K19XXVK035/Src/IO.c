@@ -81,7 +81,7 @@ __RAMFUNC void changeToOutput()
     IC_TIMER_REGISTER->ECCTL1_bit.CONTOST = 1;
     IC_TIMER_REGISTER->ECEINT_bit.CTRPRD = 1;
     NVIC_EnableIRQ(IC_TIMER_INT_VECTOR);
-    NVIC_SetPriority(IC_TIMER_INT_VECTOR, 0x05);
+    NVIC_SetPriority(IC_TIMER_INT_VECTOR, 0x00);
     IC_TIMER_REGISTER->ECCTL1_bit.TSCTRSTOP = 1;
     
     out_put = 1;

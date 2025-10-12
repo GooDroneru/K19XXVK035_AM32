@@ -765,7 +765,7 @@ void commutate()
         }
         rising = !(step % 2);
     }
-    __disable_irq(); // don't let dshot interrupt
+    //__disable_irq(); // don't let dshot interrupt
     if (!prop_brake_active)
     {
         comStep(step);
@@ -833,7 +833,7 @@ __RAMFUNC void interruptRoutine()
             return;
         }
     }
-    __disable_irq();
+    //__disable_irq();
     maskPhaseInterrupts();
     lastzctime = thiszctime;
     thiszctime = INTERVAL_TIMER_COUNT;  
