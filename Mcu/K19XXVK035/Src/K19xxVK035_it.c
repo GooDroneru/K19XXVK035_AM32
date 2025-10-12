@@ -126,7 +126,7 @@ __RAMFUNC void TMR0_IRQHandler(void)
 __RAMFUNC void ECAP1_IRQHandler()
 {
 
-    if(IC_TIMER_REGISTER->ECFLG_bit.CEVT3/* && IC_TIMER_REGISTER->ECEINT_bit.CEVT3*/) {
+    if(IC_TIMER_REGISTER->ECFLG_bit.CEVT3 && IC_TIMER_REGISTER->ECEINT_bit.CEVT3) {
         // dma_buffer[counter++] = IC_TIMER_REGISTER->CAP2;
         // dma_buffer[counter++] = IC_TIMER_REGISTER->CAP3;
         memcpy(&dma_buffer[counter], &IC_TIMER_REGISTER->CAP0, 4*sizeof(uint32_t));
