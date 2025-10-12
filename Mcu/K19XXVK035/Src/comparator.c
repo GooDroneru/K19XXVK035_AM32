@@ -28,12 +28,30 @@ void changeCompInput()
 {
     if (step == 1 || step == 4)
     {   // c floating
+        COMPARATOR_REGISTER->INTENCLR_bit.PHASE_A_COMP = 1;
+        COMPARATOR_REGISTER->INTENCLR_bit.PHASE_B_COMP = 1;
+        COMPARATOR_REGISTER->INTENSET_bit.PHASE_C_COMP = 1;
+        COMPARATOR_REGISTER->DENCLR_bit.PHASE_A_COMP = 1;
+        COMPARATOR_REGISTER->DENCLR_bit.PHASE_B_COMP = 1;
+        COMPARATOR_REGISTER->DENSET_bit.PHASE_C_COMP = 1;
     }
     if (step == 2 || step == 5)
     {   // a floating
+        COMPARATOR_REGISTER->INTENSET_bit.PHASE_A_COMP = 1;
+        COMPARATOR_REGISTER->INTENCLR_bit.PHASE_B_COMP = 1;
+        COMPARATOR_REGISTER->INTENCLR_bit.PHASE_C_COMP = 1;
+        COMPARATOR_REGISTER->DENSET_bit.PHASE_A_COMP = 1;
+        COMPARATOR_REGISTER->DENCLR_bit.PHASE_B_COMP = 1;
+        COMPARATOR_REGISTER->DENCLR_bit.PHASE_C_COMP = 1;
     }
     if (step == 3 || step == 6)
     {   // b floating
+        COMPARATOR_REGISTER->INTENCLR_bit.PHASE_A_COMP = 1;
+        COMPARATOR_REGISTER->INTENSET_bit.PHASE_B_COMP = 1;
+        COMPARATOR_REGISTER->INTENCLR_bit.PHASE_C_COMP = 1;
+        COMPARATOR_REGISTER->DENCLR_bit.PHASE_A_COMP = 1;
+        COMPARATOR_REGISTER->DENSET_bit.PHASE_B_COMP = 1;
+        COMPARATOR_REGISTER->DENCLR_bit.PHASE_C_COMP = 1;
     }
 
     if (rising)

@@ -82,29 +82,37 @@ __RAMFUNC void ADC_SEQ0_IRQHandler()
 }
 
 __RAMFUNC void GPIOB_IRQHandler()
-{
-    if (step == 1 || step == 4)
-    {   // c floating
-        if(GPIOB->INTSTATUS_bit.PHASE_C_COMP && COMPARATOR_REGISTER->DENSET_bit.PHASE_C_COMP && COMPARATOR_REGISTER->INTENSET_bit.PHASE_C_COMP) {
-            interruptRoutine();
-        }
-    }
-    if (step == 2 || step == 5)
-    {   // a floating
-        if(GPIOB->INTSTATUS_bit.PHASE_A_COMP && COMPARATOR_REGISTER->DENSET_bit.PHASE_A_COMP && COMPARATOR_REGISTER->INTENSET_bit.PHASE_C_COMP) {
-            interruptRoutine();
-        }
+{   
 
-    }
-    if (step == 3 || step == 6)
-    {   // b floating
-        if(GPIOB->INTSTATUS_bit.PHASE_B_COMP && COMPARATOR_REGISTER->DENSET_bit.PHASE_B_COMP && COMPARATOR_REGISTER->INTENSET_bit.PHASE_C_COMP) {
-            interruptRoutine();
+    if(GPIOB->INTSTATUS_bit.PHASE_C_COMP) {
+        GPIOB->INTSTATUS_bit.PHASE_C_COMP = 1;
+        if (step == 1 || step == 4)
+        {   // c floating
+            if(COMPARATOR_REGISTER->DENSET_bit.PHASE_C_COMP && COMPARATOR_REGISTER->INTENSET_bit.PHASE_C_COMP) {
+                interruptRoutine();
+            }
         }
     }
-    GPIOB->INTSTATUS_bit.PHASE_C_COMP = 1;
-    GPIOB->INTSTATUS_bit.PHASE_A_COMP = 1;
-    GPIOB->INTSTATUS_bit.PHASE_B_COMP = 1;
+
+    if(GPIOB->INTSTATUS_bit.PHASE_A_COMP) {
+        GPIOB->INTSTATUS_bit.PHASE_A_COMP = 1;
+        if (step == 2 || step == 5)
+        {   // a floating
+            if(COMPARATOR_REGISTER->DENSET_bit.PHASE_A_COMP && COMPARATOR_REGISTER->INTENSET_bit.PHASE_A_COMP) {
+                interruptRoutine();
+            }
+        }
+    }
+
+    if(GPIOB->INTSTATUS_bit.PHASE_B_COMP) {
+        GPIOB->INTSTATUS_bit.PHASE_B_COMP = 1;
+        if (step == 3 || step == 6)
+        {   // b floating
+            if(COMPARATOR_REGISTER->DENSET_bit.PHASE_B_COMP && COMPARATOR_REGISTER->INTENSET_bit.PHASE_B_COMP) {
+                interruptRoutine();
+            }
+        }
+    }
 }
 
 __RAMFUNC void TMR0_IRQHandler(void)
