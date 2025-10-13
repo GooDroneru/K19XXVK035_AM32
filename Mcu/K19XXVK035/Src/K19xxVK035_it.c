@@ -52,7 +52,7 @@ void HardFault_Handler(void)
     }
 }
 
-void UART0_TD_IRQHandler(void)
+__RAMFUNC void UART0_TD_IRQHandler(void)
 {      
     if(UART0->RIS_bit.TDRIS) {
         UART0->ICR_bit.TDIC = 1;

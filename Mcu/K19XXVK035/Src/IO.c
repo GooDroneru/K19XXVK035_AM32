@@ -15,13 +15,13 @@
 
 uint8_t buffer_padding = 7;
 char ic_timer_prescaler = CPU_FREQUENCY_MHZ / 5;
-uint32_t dma_buffer[64] __attribute__((aligned(4))) = { 0 };
+uint32_t dma_buffer[64] __attribute__((section(".ram_section"))) __attribute__((aligned(4))) = { 0 };
 char out_put = 0;
 extern uint16_t counter;
 extern uint16_t halfpulsetime;
 extern char fallingEdgeTrigger;
 
-void changeToInput()
+__RAMFUNC void changeToInput()
 {
     NVIC_DisableIRQ(IC_TIMER_INT_VECTOR);
     IC_TIMER_REGISTER->ECCTL0 = 0;
@@ -29,6 +29,8 @@ void changeToInput()
     IC_TIMER_REGISTER->ECEINT = 0;
     IC_TIMER_REGISTER->TSCTR = 0;
     IC_TIMER_REGISTER->ECCTL1_bit.TSCTRSTOP = 1;
+    IC_TIMER_REGISTER->PEINT_bit.PEINT = 1; 
+    IC_TIMER_REGISTER->ECCLR = 1;
     
     if(fallingEdgeTrigger) {
         IC_TIMER_REGISTER->ECCTL0_bit.CAP0POL = 1;
@@ -69,12 +71,13 @@ __RAMFUNC void changeToOutput()
 {
     NVIC_DisableIRQ(IC_TIMER_INT_VECTOR);
     IC_TIMER_REGISTER->ECCTL0 = 0;
-    IC_TIMER_REGISTER->ECCTL1 = 0;
+    //IC_TIMER_REGISTER->ECCTL1 = 0;
     IC_TIMER_REGISTER->ECEINT = 0;
-    IC_TIMER_REGISTER->ECCTL1_bit.TSCTRSTOP = 0;
-    IC_TIMER_REGISTER->ECCTL1 |= ECAP_ECCTL1_CAPAPWM_Msk | ECAP_ECCTL1_APWMPOL_Msk;
+    IC_TIMER_REGISTER->ECCTL1 = ECAP_ECCTL1_CAPAPWM_Msk | ECAP_ECCTL1_APWMPOL_Msk;
     IC_TIMER_REGISTER->PRD = 250;
     IC_TIMER_REGISTER->CMP = gcr[0];
+    IC_TIMER_REGISTER->PEINT_bit.PEINT = 1; 
+    IC_TIMER_REGISTER->ECCLR = 1;
 
     counter++;
 

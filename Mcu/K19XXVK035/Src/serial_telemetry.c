@@ -32,7 +32,7 @@ void telem_UART_Init(void)
     UART_AutoBaudConfig(UART0, 115200);
     UART_Cmd(UART0, ENABLE);
     __NVIC_EnableIRQ(UART0_TD_IRQn);  
-    NVIC_SetPriority(UART0_TD_IRQn, 0x1);
+    NVIC_SetPriority(UART0_TD_IRQn, 0x6);
 }
 
 void send_telem_DMA()

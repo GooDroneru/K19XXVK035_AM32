@@ -321,7 +321,7 @@ uint8_t dead_time_override = 0;
 uint16_t stall_protect_target_interval = TARGET_STALL_PROTECTION_INTERVAL;
 uint16_t enter_sine_angle = 180;
 char do_once_sinemode = 0;
-uint8_t auto_advance_level;
+uint8_t auto_advance_level = 0;
 extern char input_ready;
 
 //============================= Servo Settings ==============================
@@ -532,10 +532,10 @@ float doPidCalculations(struct fastPID* pidnow, int actual, int target)
 void loadEEpromSettings()
 {
     read_flash_bin(eepromBuffer.buffer, eeprom_address, sizeof(eepromBuffer.buffer));
-    if (eepromBuffer.advance_level > 3)
-    {
+    //if (eepromBuffer.advance_level > 3)
+    //{
         eepromBuffer.advance_level = 2;
-    }
+    //}
     if (eepromBuffer.pwm_frequency < 49 && eepromBuffer.pwm_frequency > 7)
     {
         if (eepromBuffer.pwm_frequency < 49 && eepromBuffer.pwm_frequency > 23)
@@ -684,6 +684,7 @@ void loadEEpromSettings()
         high_rpm_level = motor_kv / 12 / (32 / eepromBuffer.motor_poles);				
     }
     reverse_speed_threshold = map(motor_kv, 300, 3000, 1000, 500);
+    //eepromBuffer.auto_advance = 1;
 }
 
 void saveEEpromSettings()
@@ -837,8 +838,8 @@ __RAMFUNC void interruptRoutine()
     maskPhaseInterrupts();
     lastzctime = thiszctime;
     thiszctime = INTERVAL_TIMER_COUNT;  
-    SET_INTERVAL_TIMER_COUNT(0);
-    SET_AND_ENABLE_COM_INT(waitTime+1); // enable COM_TIMER interrupt
+    setintervaTimerCount(0);
+    setAndEnableComInt(waitTime+1); // enable COM_TIMER interrupt
     __enable_irq();
 }
 
@@ -2092,6 +2093,10 @@ int main()
         {
 		    filter_level = 2;
 	    }
+
+        if (eepromBuffer.auto_advance) {
+            auto_advance_level = map(duty_cycle, 100, 2000, 13, 23);
+        }
 /**************** old routine*********************/
         if (old_routine && running)
         {
