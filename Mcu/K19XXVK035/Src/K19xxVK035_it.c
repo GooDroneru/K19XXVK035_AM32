@@ -125,7 +125,6 @@ __RAMFUNC void TMR0_IRQHandler(void)
 
 __RAMFUNC void ECAP1_IRQHandler()
 {
-
     if(IC_TIMER_REGISTER->ECFLG_bit.CEVT3/* && IC_TIMER_REGISTER->ECEINT_bit.CEVT3*/) {
         // dma_buffer[counter++] = IC_TIMER_REGISTER->CAP2;
         // dma_buffer[counter++] = IC_TIMER_REGISTER->CAP3;
@@ -160,6 +159,6 @@ __RAMFUNC void ECAP1_IRQHandler()
             transfercomplete();
         }
     }
-    IC_TIMER_REGISTER->ECCLR_bit.INT = 1;
+    IC_TIMER_REGISTER->ECCLR = 0xFFFFFFFF;
     IC_TIMER_REGISTER->PEINT_bit.PEINT = 1;
 }
