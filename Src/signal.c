@@ -184,8 +184,8 @@ __RAMFUNC void transfercomplete()
         {
             if (dshot == 1)
             {
-                //computeDshotDMA();
-                compute_dshot_flag = 1;
+                computeDshotDMA();
+                //compute_dshot_flag = 1;
 	            receiveDshotDma();
 	        }
             if (servoPwm == 1)
