@@ -532,10 +532,10 @@ float doPidCalculations(struct fastPID* pidnow, int actual, int target)
 void loadEEpromSettings()
 {
     read_flash_bin(eepromBuffer.buffer, eeprom_address, sizeof(eepromBuffer.buffer));
-    //if (eepromBuffer.advance_level > 3)
-    //{
+    if (eepromBuffer.advance_level > 3)
+    {
         eepromBuffer.advance_level = 2;
-    //}
+    }
     if (eepromBuffer.pwm_frequency < 49 && eepromBuffer.pwm_frequency > 7)
     {
         if (eepromBuffer.pwm_frequency < 49 && eepromBuffer.pwm_frequency > 23)
