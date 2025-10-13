@@ -12,7 +12,10 @@
         "crc32.h": "c",
         "xmemory": "c",
         "plib035_wdt.h": "c",
-        "targets.h": "c"
+        "targets.h": "c",
+        "cstring": "c",
+        "variant": "c",
+        "*.def": "c"
     },
     "cortex-debug.variableUseNaturalFormat": false
 }

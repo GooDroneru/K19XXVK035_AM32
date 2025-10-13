@@ -141,7 +141,7 @@ __RAMFUNC void computeServoInput()
 }
 
 __RAMFUNC void transfercomplete()
-{   
+{      
     if (armed && dshot_telemetry)
     {
         if (out_put)
@@ -164,13 +164,13 @@ __RAMFUNC void transfercomplete()
 	    return;
 	}
     if (inputSet == 1)
-    {
+    {   
         if (dshot_telemetry)
         {
             if (out_put)
             {
-                make_dshot_package(e_com_time);
-                computeDshotDMA();
+                // make_dshot_package(e_com_time);
+                // computeDshotDMA();
                 receiveDshotDma();
 	            return;
             }
@@ -184,7 +184,8 @@ __RAMFUNC void transfercomplete()
         {
             if (dshot == 1)
             {
-                computeDshotDMA();
+                //computeDshotDMA();
+                compute_dshot_flag = 1;
 	            receiveDshotDma();
 	        }
             if (servoPwm == 1)

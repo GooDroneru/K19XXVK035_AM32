@@ -119,7 +119,7 @@ __RAMFUNC void TMR0_IRQHandler(void)
 {
     if(COM_TIMER->INTSTATUS_bit.INT && COM_TIMER->CTRL_bit.INTEN) {
         COM_TIMER->INTSTATUS_bit.INT = 1;
-        PeriodElapsedCallback( );
+        PeriodElapsedCallback();
     }
 }
 
@@ -141,6 +141,7 @@ __RAMFUNC void ECAP1_IRQHandler()
             IC_TIMER_REGISTER->ECCTL1_bit.TSCTRSTOP = 0;
             NVIC_DisableIRQ(IC_TIMER_INT_VECTOR);
             counter = 0;
+            //memcpy(&dma_buffer[0], &dma_buffer2[0], 32*sizeof(uint32_t));
             transfercomplete();
             input_ready = 1;
         }     
