@@ -88,9 +88,9 @@ __RAMFUNC void GPIOB_IRQHandler()
         GPIOB->INTSTATUS_bit.PHASE_C_COMP = 1;
         if (step == 1 || step == 4)
         {   // c floating
-            if(COMPARATOR_REGISTER->DENSET_bit.PHASE_C_COMP && COMPARATOR_REGISTER->INTENSET_bit.PHASE_C_COMP) {
+            //if(COMPARATOR_REGISTER->DENSET_bit.PHASE_C_COMP && COMPARATOR_REGISTER->INTENSET_bit.PHASE_C_COMP) {
                 interruptRoutine();
-            }
+            //}
         }
     }
 
@@ -98,9 +98,9 @@ __RAMFUNC void GPIOB_IRQHandler()
         GPIOB->INTSTATUS_bit.PHASE_A_COMP = 1;
         if (step == 2 || step == 5)
         {   // a floating
-            if(COMPARATOR_REGISTER->DENSET_bit.PHASE_A_COMP && COMPARATOR_REGISTER->INTENSET_bit.PHASE_A_COMP) {
+            //if(COMPARATOR_REGISTER->DENSET_bit.PHASE_A_COMP && COMPARATOR_REGISTER->INTENSET_bit.PHASE_A_COMP) {
                 interruptRoutine();
-            }
+            //}
         }
     }
 
@@ -108,19 +108,19 @@ __RAMFUNC void GPIOB_IRQHandler()
         GPIOB->INTSTATUS_bit.PHASE_B_COMP = 1;
         if (step == 3 || step == 6)
         {   // b floating
-            if(COMPARATOR_REGISTER->DENSET_bit.PHASE_B_COMP && COMPARATOR_REGISTER->INTENSET_bit.PHASE_B_COMP) {
+            //if(COMPARATOR_REGISTER->DENSET_bit.PHASE_B_COMP && COMPARATOR_REGISTER->INTENSET_bit.PHASE_B_COMP) {
                 interruptRoutine();
-            }
+            //}
         }
     }
 }
 
 __RAMFUNC void TMR0_IRQHandler(void)
 {
-    if(COM_TIMER->INTSTATUS_bit.INT && COM_TIMER->CTRL_bit.INTEN) {
+    //if(COM_TIMER->INTSTATUS_bit.INT && COM_TIMER->CTRL_bit.INTEN) {
         COM_TIMER->INTSTATUS_bit.INT = 1;
         PeriodElapsedCallback();
-    }
+    //}
 }
 
 __RAMFUNC void ECAP1_IRQHandler()
@@ -159,6 +159,6 @@ __RAMFUNC void ECAP1_IRQHandler()
             transfercomplete();
         }
     }
-    IC_TIMER_REGISTER->ECCLR = 0xFFFFFFFF;
+    IC_TIMER_REGISTER->ECCLR_bit.INT = 1;
     IC_TIMER_REGISTER->PEINT_bit.PEINT = 1;
 }
