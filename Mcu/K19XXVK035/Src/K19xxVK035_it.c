@@ -2,6 +2,7 @@
 #include "K19xxVK035_it.h"
 #include "targets.h"
 #include "ADC.h"
+#include "string.h"
 #include "comparator.h"
 #include "functions.h"
 
@@ -83,36 +84,36 @@ __RAMFUNC void ADC_SEQ0_IRQHandler()
 
 __RAMFUNC void GPIOB_IRQHandler()
 {   
-
-    if(GPIOB->INTSTATUS_bit.PHASE_C_COMP) {
-        GPIOB->INTSTATUS_bit.PHASE_C_COMP = 1;
-        if (step == 1 || step == 4)
-        {   // c floating
-            //if(COMPARATOR_REGISTER->DENSET_bit.PHASE_C_COMP && COMPARATOR_REGISTER->INTENSET_bit.PHASE_C_COMP) {
+    if (step == 1 || step == 4)
+    {   // c floating
+        if(GPIOB->INTSTATUS_bit.PHASE_C_COMP) {
+            GPIOB->INTSTATUS = 0xFFFFFFFF;
+            if(COMPARATOR_REGISTER->INTENSET_bit.PHASE_C_COMP) {
                 interruptRoutine();
-            //}
+            }
         }
+        return;
     }
-
+    if (step == 2 || step == 5)
+    {   // a floating
     if(GPIOB->INTSTATUS_bit.PHASE_A_COMP) {
-        GPIOB->INTSTATUS_bit.PHASE_A_COMP = 1;
-        if (step == 2 || step == 5)
-        {   // a floating
-            //if(COMPARATOR_REGISTER->DENSET_bit.PHASE_A_COMP && COMPARATOR_REGISTER->INTENSET_bit.PHASE_A_COMP) {
+        GPIOB->INTSTATUS = 0xFFFFFFFF;
+            if(COMPARATOR_REGISTER->INTENSET_bit.PHASE_A_COMP) {
                 interruptRoutine();
-            //}
+            }
         }
+        return;
     }
-
+    if (step == 3 || step == 6)
+    {   // b floating
     if(GPIOB->INTSTATUS_bit.PHASE_B_COMP) {
-        GPIOB->INTSTATUS_bit.PHASE_B_COMP = 1;
-        if (step == 3 || step == 6)
-        {   // b floating
-            //if(COMPARATOR_REGISTER->DENSET_bit.PHASE_B_COMP && COMPARATOR_REGISTER->INTENSET_bit.PHASE_B_COMP) {
+        GPIOB->INTSTATUS = 0xFFFFFFFF;
+            if(COMPARATOR_REGISTER->INTENSET_bit.PHASE_B_COMP) {
                 interruptRoutine();
-            //}
+            }
         }
     }
+    return;
 }
 
 __RAMFUNC void TMR0_IRQHandler(void)
@@ -125,7 +126,7 @@ __RAMFUNC void TMR0_IRQHandler(void)
 
 __RAMFUNC void ECAP1_IRQHandler()
 {
-    if(IC_TIMER_REGISTER->ECFLG_bit.CEVT3/* && IC_TIMER_REGISTER->ECEINT_bit.CEVT3*/) {
+    if(IC_TIMER_REGISTER->ECFLG_bit.CEVT3 && IC_TIMER_REGISTER->ECEINT_bit.CEVT3) {
         // dma_buffer[counter++] = IC_TIMER_REGISTER->CAP2;
         // dma_buffer[counter++] = IC_TIMER_REGISTER->CAP3;
         memcpy(&dma_buffer[counter], &IC_TIMER_REGISTER->CAP0, 4*sizeof(uint32_t));
@@ -145,7 +146,7 @@ __RAMFUNC void ECAP1_IRQHandler()
             input_ready = 1;
         }     
     }
-    if(IC_TIMER_REGISTER->ECFLG_bit.CTRPRD/* && IC_TIMER_REGISTER->ECEINT_bit.CTRPRD*/) {
+    if(IC_TIMER_REGISTER->ECFLG_bit.CTRPRD && IC_TIMER_REGISTER->ECEINT_bit.CTRPRD) {
         IC_TIMER_REGISTER->ECCLR_bit.INT = 1;
         IC_TIMER_REGISTER->PEINT_bit.PEINT = 1;
         IC_TIMER_REGISTER->ECCLR_bit.CTRPRD = 1;

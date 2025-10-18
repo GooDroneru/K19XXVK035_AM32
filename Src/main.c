@@ -1687,14 +1687,14 @@ int main()
 #ifdef BOOTLOADER
     hardwareVersion_t hardwareInfo;
     version_t __firmware_version;
-    read_flash_bin(&__firmware_version, __firmware_info_start, sizeof(__firmware_version));
-    read_flash_bin(&hardwareInfo, __device_info_start, sizeof(hardwareInfo));
+    read_flash_bin((uint8_t*)(&__firmware_version), (uint32_t)__firmware_info_start, sizeof(__firmware_version));
+    read_flash_bin((uint8_t*)(&hardwareInfo), (uint32_t)__device_info_start, sizeof(hardwareInfo));
     if((__firmware_version.major != firmware_version.major) || (__firmware_version.minor != firmware_version.minor)) {
-        save_flash_nolib(&firmware_version,sizeof(firmware_version), __firmware_info_start);
+        save_flash_nolib((uint8_t*)(&firmware_version), sizeof(firmware_version), (uint32_t)__firmware_info_start);
     }
     if(hardwareInfo.deviceId[4] == '8') //20R
     {
-        deadTime = 60;
+        deadTime = 45;
     }
     else if(hardwareInfo.deviceId[3] == '1') //20R
     {
