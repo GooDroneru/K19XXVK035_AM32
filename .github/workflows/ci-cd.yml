@@ -7,7 +7,7 @@ on:
     branches: [ main ]
 
 env:
-  ARM_TOOLCHAIN_URL: https://developer.arm.com/-/media/Files/downloads/gnu/12.2.mpacbti-rel1/binrel/arm-gnu-toolchain-12.2.mpacbti-rel1-x86_64-arm-none-eabi.tar.xz
+  ARM_TOOLCHAIN_URL: https://developer.arm.com/-/media/Files/downloads/gnu/14.2.rel1/binrel/arm-gnu-toolchain-14.2.rel1-x86_64-arm-none-eabi.tar.xz
 
 jobs:
   build:
@@ -18,11 +18,11 @@ jobs:
         with:
           submodules: recursive 
           
-      - name: Install ARM GNU Toolchain
+      - name: Install ARM GNU Toolchain 14.2.1
         run: |
           wget ${{ env.ARM_TOOLCHAIN_URL }} -O arm-gnu-toolchain.tar.xz
           tar -xf arm-gnu-toolchain.tar.xz
-          echo "$(pwd)/arm-gnu-toolchain-12.2.mpacbti-rel1-x86_64-arm-none-eabi/bin" >> $GITHUB_PATH
+          echo "$(pwd)/arm-gnu-toolchain-14.2.rel1-x86_64-arm-none-eabi/bin" >> $GITHUB_PATH
 
       - name: Install CMake and ninja (faster builds)
         run: |
@@ -34,6 +34,11 @@ jobs:
           ls -la
           ls -la platform/
           ls -la platform/CMakeLists.txt || echo "Platform CMakeLists.txt not found"
+
+      - name: Verify ARM GCC version
+        run: |
+          arm-none-eabi-gcc --version
+          arm-none-eabi-gcc -dumpversion
 
       - name: Build No Bootloader version
         run: |
