@@ -15,7 +15,10 @@
         "targets.h": "c",
         "cstring": "c",
         "variant": "c",
-        "*.def": "c"
+        "*.def": "c",
+        "serial_telemetry.h": "c",
+        "peripherals.h": "c",
+        "main.h": "c"
     },
     "cortex-debug.variableUseNaturalFormat": false
 }

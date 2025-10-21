@@ -11,6 +11,13 @@
 #include "main.h"
 #include "ADC.h"
 
+enum commutationFrequency {
+    PWM12 = 12,
+    PWM24 = 24,
+    PWM48 = 48,
+    PWM24TO48 = 0
+};
+
 void initAfterJump(void);
 void initCorePeripherals(void);
 void SystemClock_Config(void);

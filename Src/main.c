@@ -299,6 +299,8 @@ enum inputType {
     SERIAL_IN,
     EDTARM,
 };
+
+uint8_t commFreq = 1;
 uint16_t deadTime = DEAD_TIME;
 EEprom_t eepromBuffer;
 uint32_t eeprom_address = EEPROM_START_ADD; 
@@ -536,29 +538,15 @@ void loadEEpromSettings()
     {
         eepromBuffer.advance_level = 2;
     }
-    if (eepromBuffer.pwm_frequency < 49 && eepromBuffer.pwm_frequency > 7)
+    if ((eepromBuffer.version.major == 0) && (eepromBuffer.version.minor == 2))
     {
-        if (eepromBuffer.pwm_frequency < 49 && eepromBuffer.pwm_frequency > 23)
-        {
-            TIMER1_MAX_ARR = map(eepromBuffer.pwm_frequency, 24, 48, TIM1_AUTORELOAD, TIM1_AUTORELOAD / 2);
-        }
-        if (eepromBuffer.pwm_frequency < 24 && eepromBuffer.pwm_frequency > 11)
-        {
-            TIMER1_MAX_ARR = map(eepromBuffer.pwm_frequency, 12, 24, TIM1_AUTORELOAD * 2, TIM1_AUTORELOAD);
-        }
-        if (eepromBuffer.pwm_frequency < 12 && eepromBuffer.pwm_frequency > 7)
-        {
-            TIMER1_MAX_ARR = map(eepromBuffer.pwm_frequency, 7, 16, TIM1_AUTORELOAD * 3, TIM1_AUTORELOAD / 2 * 3);
-        }
+        commFreq = eepromBuffer.pwm_frequency;
         SET_AUTO_RELOAD_PWM(TIMER1_MAX_ARR);
      //   throttle_max_at_high_rpm = TIMER1_MAX_ARR;
      //   duty_cycle_maximum = TIMER1_MAX_ARR;
     }
-    else
-    {
-        tim1_arr = TIM1_AUTORELOAD;
-        SET_AUTO_RELOAD_PWM(tim1_arr);
-    }
+    tim1_arr = TIM1_AUTORELOAD;
+    SET_AUTO_RELOAD_PWM(tim1_arr);
     if (eepromBuffer.startup_power < 151 && eepromBuffer.startup_power > 49)
     {
         min_startup_duty = (eepromBuffer.startup_power);
@@ -1249,6 +1237,19 @@ if (!stepper_sine && armed)
             }
         }
     }
+    if(commFreq == PWM24TO48) {
+        if(commutation_interval < 500) {
+            PWM0->TBCTL_bit.CLKDIV = PWM_TBCTL_CLKDIV_Div1;        //48 KHz
+            PWM1->TBCTL_bit.CLKDIV = PWM_TBCTL_CLKDIV_Div1;        //48 KHz
+            PWM2->TBCTL_bit.CLKDIV = PWM_TBCTL_CLKDIV_Div1;        //48 KHz
+        }
+        else {
+            PWM0->TBCTL_bit.CLKDIV = PWM_TBCTL_CLKDIV_Div2;        //24 KHz
+            PWM1->TBCTL_bit.CLKDIV = PWM_TBCTL_CLKDIV_Div2;        //24 KHz
+            PWM2->TBCTL_bit.CLKDIV = PWM_TBCTL_CLKDIV_Div2;        //24 KHz
+        }
+    }
+
 #endif
 }
 
