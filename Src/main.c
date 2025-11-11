@@ -538,7 +538,7 @@ void loadEEpromSettings()
     {
         eepromBuffer.advance_level = 2;
     }
-    if ((eepromBuffer.version.major == 0) && (eepromBuffer.version.minor == 2))
+    if ((eepromBuffer.version.major == 0) && (eepromBuffer.version.minor == 2) && (!eepromBuffer.variable_pwm))
     {
         commFreq = eepromBuffer.pwm_frequency;
         SET_AUTO_RELOAD_PWM(TIMER1_MAX_ARR);
@@ -1453,10 +1453,11 @@ __RAMFUNC void tenKhzRoutine()
 		        }
 		        if ((armed && running) && input > 47)
                 {
-                if (eepromBuffer.variable_pwm)
-                {
-		        }
-                adjusted_duty_cycle = ((duty_cycle * tim1_arr) / 2000) + 1;
+                    if (eepromBuffer.variable_pwm)
+                    {
+
+                    }
+                    adjusted_duty_cycle = ((duty_cycle * tim1_arr) / 2000) + 1;
 		        }
                 else
                 {
@@ -1695,7 +1696,7 @@ int main()
     }
     if(hardwareInfo.deviceId[4] == '8') //20R
     {
-        deadTime = 50;
+        deadTime = 90;
     }
     else if(hardwareInfo.deviceId[3] == '1') //20R
     {
@@ -1881,8 +1882,8 @@ int main()
         e_com_time = ((commutation_intervals[0] + commutation_intervals[1] + commutation_intervals[2] + commutation_intervals[3] + commutation_intervals[4] + commutation_intervals[5]) + 4) >> 1; // COMMUTATION INTERVAL IS 0.5US INCREMENTS
         if (eepromBuffer.variable_pwm)
         {
-//		    tim1_arr = map(commutation_interval, 96, 200, TIMER1_MAX_ARR / 2, TIMER1_MAX_ARR);
-//      	pwm_frequency_conversion_factor = (tim1_arr << 10) / TIMER1_MAX_ARR; // multply by 1024
+		    tim1_arr = map(commutation_interval, 96, 200, TIMER1_MAX_ARR / 2, TIMER1_MAX_ARR);
+     	//pwm_frequency_conversion_factor = (tim1_arr << 10) / TIMER1_MAX_ARR; // multply by 1024
         }
         if (signaltimeout > (LOOP_FREQUENCY_HZ >> 1))
         { // half second timeout when armed;
@@ -2018,6 +2019,24 @@ int main()
         battery_voltage = (/*(7 * battery_voltage) + */((ADC_raw_volts * 3300 / 4095 * VOLTAGE_DIVIDER) / 100))/* >> 3*/;
         smoothed_raw_current = getSmoothedCurrent();
         actual_current = ((smoothed_raw_current * 3300 / 41) - (CURRENT_OFFSET * 100)) / (MILLIVOLT_PER_AMP);
+        // uint16_t seqDelay = ((PWM0->CMPA_bit.CMPA * 2) / 3) + 1;
+        // if(!eepromBuffer.variable_pwm) {
+        //     if(PWM0->TBCTL_bit.CLKDIV == PWM_TBCTL_CLKDIV_Div1) {
+        //         seqDelay /= 2;
+        //         seqDelay += 1;
+        //     }
+        //     else if(PWM0->TBCTL_bit.CLKDIV == PWM_TBCTL_CLKDIV_Div2) {
+                
+        //     }
+        //     else if(PWM0->TBCTL_bit.CLKDIV == PWM_TBCTL_CLKDIV_Div4) {
+        //         seqDelay *= 2;
+        //     }
+        //     ADC_SEQ_SetRestartTimer(ADC_SEQ_Num_0, seqDelay);
+        // }
+        // else {
+        //     seqDelay = (seqDelay * ((tim1_arr * 100) / TIM1_AUTORELOAD)) / 100;
+        //     ADC_SEQ_SetRestartTimer(ADC_SEQ_Num_0, seqDelay);
+        // }
         if (actual_current < 0)
         {
             actual_current = 0;
