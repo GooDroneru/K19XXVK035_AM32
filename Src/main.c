@@ -761,7 +761,7 @@ void commutate()
     }
     __enable_irq();
     changeCompInput();
-	if (average_interval > 1700)
+	if (average_interval > 2500)
     {
         old_routine = 1;
     }
@@ -1786,6 +1786,7 @@ int main()
         servoPwm = 0;
         EDT_ARMED = 1;
 #endif
+
 
 #ifdef USE_CRSF_INPUT
 	inputSet = 1;
