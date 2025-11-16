@@ -346,7 +346,7 @@ typedef struct version_s {
 
 version_t firmware_version = {
         .major = 1,
-        .minor = 4,
+        .minor = 5,
 };
 
 // const char filename[30] __attribute__((section(".file_name"))) = FILE_NAME;
@@ -538,7 +538,7 @@ void loadEEpromSettings()
     {
         eepromBuffer.advance_level = 2;
     }
-    if ((eepromBuffer.version.major == 0) && (eepromBuffer.version.minor == 2) && (!eepromBuffer.variable_pwm))
+    if ((eepromBuffer.version.major == 0) && (eepromBuffer.version.minor >= 2) && (!eepromBuffer.variable_pwm))
     {
         commFreq = eepromBuffer.pwm_frequency;
         SET_AUTO_RELOAD_PWM(TIMER1_MAX_ARR);
@@ -761,10 +761,12 @@ void commutate()
     }
     __enable_irq();
     changeCompInput();
+if(!eepromBuffer.no_polling_start) {
 	if (average_interval > 2500)
     {
         old_routine = 1;
     }
+}
     bemfcounter = 0;
     zcfound = 0;
     commutation_intervals[step - 1] = commutation_interval; // just used to calulate average
@@ -1763,14 +1765,14 @@ int main()
         eepromBuffer.comp_pwm = 1;
         //playStartupTune();
         eepromBuffer.advance_level = 2;
-        motor_kv = 2200;
+        motor_kv = 300;
         eepromBuffer.motor_poles = 14;
         eepromBuffer.stall_protection = 0;
         eepromBuffer.brake_on_stop = 1;
         eepromBuffer.stuck_rotor_protection = 1;
         eepromBuffer.drag_brake_strength = 1;
         eepromBuffer.bi_direction = 0;
-        eepromBuffer.auto_advance = 0;
+        eepromBuffer.auto_advance = 1;
         eepromBuffer.startup_power = 100;
         eepromBuffer.rc_car_reverse = 0;
         //LOW_VOLTAGE_CUTOFF = 1;
@@ -1779,7 +1781,7 @@ int main()
         minimum_duty_cycle = (minStartupDuty/ 2 + DEAD_TIME/3) * TIMER1_MAX_ARR / 2000 ;
         stall_protect_minimum_duty = minimum_duty_cycle+10;
         //eepromBuffer.use_sine_start = 1;
-        eepromBuffer.use_sine_start = 1;
+        eepromBuffer.use_sine_start = 0;
         servo_low_threshold = 1100;
         servo_high_threshold = 1900;
         dshot = 1;

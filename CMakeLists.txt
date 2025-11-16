@@ -158,22 +158,22 @@ target_compile_definitions(BOOTLOADER INTERFACE
     BOOTLOADER
 )
 
-add_executable(1.4.0_no_bootloader)
-target_link_libraries(1.4.0_no_bootloader SOURCES m)
-gcc_generate_bin_file(TARGET 1.4.0_no_bootloader)
-target_link_options(1.4.0_no_bootloader PRIVATE
+add_executable(1.5.0_no_bootloader)
+target_link_libraries(1.5.0_no_bootloader SOURCES m)
+gcc_generate_bin_file(TARGET 1.5.0_no_bootloader)
+target_link_options(1.5.0_no_bootloader PRIVATE
     -T "${LDSCRIPT_NO_BOOTLOADER}"
-    -Wl,-Map=${CMAKE_BINARY_DIR}/1.4.0_no_bootloader.map
+    -Wl,-Map=${CMAKE_BINARY_DIR}/1.5.0_no_bootloader.map
     -Wl,--print-memory-usage
 )
-set_target_properties(1.4.0_no_bootloader PROPERTIES SUFFIX ".elf")
+set_target_properties(1.5.0_no_bootloader PROPERTIES SUFFIX ".elf")
 
-add_executable(1.4.0_bootloader)
-target_link_libraries(1.4.0_bootloader SOURCES BOOTLOADER m)
-gcc_generate_bin_file(TARGET 1.4.0_bootloader)
-target_link_options(1.4.0_bootloader PRIVATE
+add_executable(1.5.0_bootloader)
+target_link_libraries(1.5.0_bootloader SOURCES BOOTLOADER m)
+gcc_generate_bin_file(TARGET 1.5.0_bootloader)
+target_link_options(1.5.0_bootloader PRIVATE
     -T "${LDSCRIPT_WITH_BOOTLOADER}"
-    -Wl,-Map=${CMAKE_BINARY_DIR}/1.4.0_bootloader.map
+    -Wl,-Map=${CMAKE_BINARY_DIR}/1.5.0_bootloader.map
     -Wl,--print-memory-usage
 )
-set_target_properties(1.4.0_bootloader PROPERTIES SUFFIX ".elf")
+set_target_properties(1.5.0_bootloader PROPERTIES SUFFIX ".elf")
