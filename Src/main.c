@@ -677,7 +677,7 @@ void loadEEpromSettings()
 
 void saveEEpromSettings()
 {
-    eepromBuffer.eeprom_version = eeprom_layout_version;
+    //eepromBuffer.eeprom_version = eeprom_layout_version;
     save_flash_nolib(eepromBuffer.buffer, sizeof(eepromBuffer.buffer), eeprom_address);
 }
 
@@ -1676,7 +1676,6 @@ static void FPUInit()
     }
 }
 
-
 int main()
 {
     // RCU->HCLKCFG_bit.GPIOBEN = 1;
@@ -1687,7 +1686,6 @@ int main()
     SystemCoreClockUpdate( );
     FPUInit();
     initAfterJump();
-
 #ifdef BOOTLOADER
     hardwareVersion_t hardwareInfo;
     version_t __firmware_version;
@@ -1698,7 +1696,7 @@ int main()
     }
     if(hardwareInfo.deviceId[4] == '8') //20R
     {
-        deadTime = 90;
+        deadTime = 45;
     }
     else if(hardwareInfo.deviceId[3] == '1') //20R
     {
@@ -1710,11 +1708,11 @@ int main()
     minimum_duty_cycle = deadTime;
     stall_protect_minimum_duty = deadTime;
 #endif
-
     initCorePeripherals();
     enableCorePeripherals();
     loadEEpromSettings();
-    //saveEEpromSettings();
+    delayMillis(1000);
+
 
     if (VERSION_MAJOR != eepromBuffer.version.major || VERSION_MINOR != eepromBuffer.version.minor || eeprom_layout_version > eepromBuffer.eeprom_version)
     {
