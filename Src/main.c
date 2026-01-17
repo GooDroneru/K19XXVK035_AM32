@@ -577,6 +577,7 @@ void loadEEpromSettings()
             setVolume(eepromBuffer.beep_volume);
         }
 #endif
+        
         servo_low_threshold = (eepromBuffer.servo.low_threshold * 2) + 750; // anything below this point considered 0
         servo_high_threshold = (eepromBuffer.servo.high_threshold * 2) + 1750; // anything above this point considered 2000 (max)
         servo_neutral = (eepromBuffer.servo.neutral) + 1374;
@@ -1707,11 +1708,19 @@ int main()
     dead_time_override = deadTime;
     minimum_duty_cycle = deadTime;
     stall_protect_minimum_duty = deadTime;
+    
 #endif
     initCorePeripherals();
     enableCorePeripherals();
     loadEEpromSettings();
     delayMillis(1000);
+
+    PWM0->DBRED = dead_time_override;
+    PWM0->DBFED = dead_time_override;
+    PWM1->DBRED = dead_time_override;
+    PWM1->DBFED = dead_time_override;
+    PWM2->DBRED = dead_time_override;
+    PWM2->DBFED = dead_time_override;
 
 
     if (VERSION_MAJOR != eepromBuffer.version.major || VERSION_MINOR != eepromBuffer.version.minor || eeprom_layout_version > eepromBuffer.eeprom_version)
