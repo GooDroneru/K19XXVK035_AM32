@@ -12,6 +12,7 @@ extern uint8_t commFreq;
 
 void initCorePeripherals(void)
 {
+  UN_TIM2_Init( );
   ALL_GPIO_Init( );   //gpio clock
   ALL_DMA_Init( );    //IC DMA and ADC DMA
   PWM_TIM1_Init( );   //6 channels PWM
@@ -20,7 +21,7 @@ void initCorePeripherals(void)
   COM_TIM3_Init( );   //
   TENKHz_SysTick_Init( );
   MX_TIM16_Init( );
-  UN_TIM2_Init( );
+
   #ifdef USE_SERIAL_TELEMETRY
   telem_UART_Init();
   #endif
@@ -369,20 +370,60 @@ void ALL_GPIO_Init(void)
     NVIC_SetPriority(GPIOB_IRQn, 0x2);
 }
 
+extern uint32_t dma_buffer[64];
+
+static volatile DMA_CtrlData_TypeDef DMA_CONFIGDATA __attribute__((aligned(1024)));
+
 void UN_TIM2_Init(void) 
 {
-    RCU->PCLKCFG_bit.ECAP1EN = 1;
-    RCU->PRSTCFG_bit.ECAP1EN = 1;
+    // RCU->PCLKCFG_bit.ECAP1EN = 1;
+    // RCU->PRSTCFG_bit.ECAP1EN = 1;
     RCU->HCLKCFG_bit.GPIOAEN = 1;
     RCU->HRSTCFG_bit.GPIOAEN = 1;
-    SIU->REMAPAF_bit.ECAP1EN = 1;
+    //SIU->REMAPAF_bit.ECAP1EN = 1;
+    GPIO_LockKeyCmd(GPIOA, ENABLE);
+    GPIOA->LOCKCLR_bit.PIN5 = 1;
     GPIOA->DENSET_bit.PIN5 = 1;
-    GPIOA->ALTFUNCSET_bit.PIN5 = 1;
-    IC_TIMER_REGISTER->ECCTL0_bit.CAPLDEN = 0;
-    IC_TIMER_REGISTER->ECCTL0_bit.CAP1POL = 1;
-    IC_TIMER_REGISTER->ECCTL0_bit.CAP3POL = 1;
-    IC_TIMER_REGISTER->ECCTL1_bit.CONTOST = 0;
-    IC_TIMER_REGISTER->ECCTL1_bit.STOPWRAP = 3;
+    GPIOA->ALTFUNCCLR_bit.PIN5 = 1;
+    GPIOA->DMAREQSET_bit.PIN5 = 1;
+    GPIOA->INTEDGESET_bit.PIN5 = 1;
+    //GPIOA->INTENSET_bit.PIN5 = 1;
+
+    GPIOA->LOCKCLR_bit.PIN7 = 1;
+    GPIOA->DENSET_bit.PIN7 = 1;
+    GPIOA->ALTFUNCCLR_bit.PIN7 = 1;
+    GPIOA->OUTENSET_bit.PIN7 = 1;
+
+
+    RCU->PCLKCFG_bit.TMR3EN = 1;
+    RCU->PRSTCFG_bit.TMR3EN = 1;
+    TMR3->VALUE = 0xFFFFFFFF;
+    TMR3->LOAD = 0xFFFFFFFF;
+    TMR3->CTRL_bit.ON = 1;
+
+    DMA->BASEPTR = (uint32_t)(&DMA_CONFIGDATA); 
+   
+    // Инициализация канала на прием RX (3-й канал DMA) 
+    /* источник */
+    DMA_CONFIGDATA.PRM_DATA.CH[8].SRC_DATA_END_PTR = (uint32_t)(&TMR3->VALUE); //Адрес источника данных 
+    DMA_CONFIGDATA.PRM_DATA.CH[8].CHANNEL_CFG_bit.SRC_SIZE = DMA_CHANNEL_CFG_SRC_SIZE_Word; //Разрядность данных источника
+    DMA_CONFIGDATA.PRM_DATA.CH[8].CHANNEL_CFG_bit.SRC_INC =  DMA_CHANNEL_CFG_SRC_INC_None; // Не инкрементируем
+    /* приемник */
+    DMA_CONFIGDATA.PRM_DATA.CH[8].DST_DATA_END_PTR = (uint32_t )&(dma_buffer[32-1]); //Адрес конца данных приемника
+    DMA_CONFIGDATA.PRM_DATA.CH[8].CHANNEL_CFG_bit.DST_SIZE = DMA_CHANNEL_CFG_SRC_SIZE_Word; //Разрядность данных приемника
+    DMA_CONFIGDATA.PRM_DATA.CH[8].CHANNEL_CFG_bit.DST_INC = DMA_CHANNEL_CFG_DST_INC_Word; //Инкрементируем на байт
+    /* общее */
+    DMA_CONFIGDATA.PRM_DATA.CH[8].CHANNEL_CFG_bit.R_POWER = 0x0; // Количество передач до переарбитрации
+    DMA_CONFIGDATA.PRM_DATA.CH[8].CHANNEL_CFG_bit.N_MINUS_1 = 32-1; //Общее количество передач DMA
+    DMA_CONFIGDATA.PRM_DATA.CH[8].CHANNEL_CFG_bit.CYCLE_CTRL = DMA_CHANNEL_CFG_CYCLE_CTRL_AutoReq; //Задание типа цикла DMA 
+    
+    // Инциализация контроллера DMA
+    DMA->ENSET_bit.CH8 = 1; //Включаем канала DMA 1 
+    DMA->CFG_bit.MASTEREN = 1; //Бит разрешения работы контролера DMA
+    // NVIC прерывания DMA
+    NVIC_EnableIRQ(DMA_CH8_IRQn); 
+
+    DMA_ChannelMuxConfig(DMA_ChannelMux_8, DMA_ChannelMux_8_GPIOA);
 }
 
 

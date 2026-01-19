@@ -1870,7 +1870,7 @@ int main()
         }
     }
 
-    receiveDshotDma();
+    //receiveDshotDma();
 
     if (drive_by_rpm)
     {

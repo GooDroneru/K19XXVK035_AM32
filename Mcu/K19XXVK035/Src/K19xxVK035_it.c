@@ -5,6 +5,7 @@
 #include "string.h"
 #include "comparator.h"
 #include "functions.h"
+#include "peripherals.h"
 
 extern void transfercomplete();
 extern void PeriodElapsedCallback();
@@ -162,4 +163,16 @@ __RAMFUNC void ECAP1_IRQHandler()
     }
     IC_TIMER_REGISTER->ECCLR_bit.INT = 1;
     IC_TIMER_REGISTER->PEINT_bit.PEINT = 1;
+}
+
+void DMA_CH8_IRQHandler()
+{   
+    TMR3->VALUE = 0xFFFFFFFF;
+    for(uint8_t i = 0; i < 32; i++) {
+        dma_buffer[i] = 0xFFFFFFFF - dma_buffer[i];
+    }
+    transfercomplete();
+    GPIOA->DATAOUTTGL_bit.PIN7 = 1;
+    input_ready = 1;
+    //UN_TIM2_Init();
 }
