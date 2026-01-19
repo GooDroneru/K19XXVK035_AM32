@@ -283,7 +283,7 @@ void checkServo()
 }
 
 __RAMFUNC void detectInput()
-{
+{   
     smallestnumber = 2000000;
     average_signal_pulse = 0;
     int lastnumber = dma_buffer[0];

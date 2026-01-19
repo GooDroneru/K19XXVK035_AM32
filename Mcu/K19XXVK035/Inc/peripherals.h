@@ -49,6 +49,8 @@ void enableCorePeripherals(void);
 void reloadWatchDogCounter(void);
 void generatePwmTimerEvent(void);
 void setPrescalerPWM(uint16_t presc);
+void updateDma();
+void reverseBuffer();
 
 #define INTERVAL_TIMER_COUNT (getintervaTimerCount())
 #define RELOAD_WATCHDOG_COUNTER() (WDT_ITStatusClear())

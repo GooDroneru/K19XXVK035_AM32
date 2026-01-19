@@ -167,12 +167,11 @@ __RAMFUNC void ECAP1_IRQHandler()
 
 void DMA_CH8_IRQHandler()
 {   
+
     TMR3->VALUE = 0xFFFFFFFF;
-    for(uint8_t i = 0; i < 32; i++) {
-        dma_buffer[i] = 0xFFFFFFFF - dma_buffer[i];
-    }
+    reverseBuffer();
     transfercomplete();
-    GPIOA->DATAOUTTGL_bit.PIN7 = 1;
     input_ready = 1;
-    //UN_TIM2_Init();
+    updateDma();
+    GPIOA->DATAOUTTGL_bit.PIN7 = 1;
 }

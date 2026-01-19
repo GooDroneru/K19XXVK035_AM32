@@ -371,6 +371,7 @@ void ALL_GPIO_Init(void)
 }
 
 extern uint32_t dma_buffer[64];
+extern uint32_t dma_buffer2[64];
 
 static volatile DMA_CtrlData_TypeDef DMA_CONFIGDATA __attribute__((aligned(1024)));
 
@@ -382,18 +383,19 @@ void UN_TIM2_Init(void)
     RCU->HRSTCFG_bit.GPIOAEN = 1;
     //SIU->REMAPAF_bit.ECAP1EN = 1;
     GPIO_LockKeyCmd(GPIOA, ENABLE);
+    GPIOA->ALTFUNCCLR_bit.PIN5 = 1;
     GPIOA->LOCKCLR_bit.PIN5 = 1;
     GPIOA->DENSET_bit.PIN5 = 1;
-    GPIOA->ALTFUNCCLR_bit.PIN5 = 1;
+    GPIOA->INMODE_bit.PIN5 = 0;
     GPIOA->DMAREQSET_bit.PIN5 = 1;
+    GPIOA->INTTYPESET_bit.PIN5 = 1;
     GPIOA->INTEDGESET_bit.PIN5 = 1;
+    //GPIOA->INTPOLSET_bit.PIN5 = 1;
     //GPIOA->INTENSET_bit.PIN5 = 1;
-
     GPIOA->LOCKCLR_bit.PIN7 = 1;
-    GPIOA->DENSET_bit.PIN7 = 1;
     GPIOA->ALTFUNCCLR_bit.PIN7 = 1;
+    GPIOA->DENSET_bit.PIN7 = 1;
     GPIOA->OUTENSET_bit.PIN7 = 1;
-
 
     RCU->PCLKCFG_bit.TMR3EN = 1;
     RCU->PRSTCFG_bit.TMR3EN = 1;
@@ -409,14 +411,15 @@ void UN_TIM2_Init(void)
     DMA_CONFIGDATA.PRM_DATA.CH[8].CHANNEL_CFG_bit.SRC_SIZE = DMA_CHANNEL_CFG_SRC_SIZE_Word; //Разрядность данных источника
     DMA_CONFIGDATA.PRM_DATA.CH[8].CHANNEL_CFG_bit.SRC_INC =  DMA_CHANNEL_CFG_SRC_INC_None; // Не инкрементируем
     /* приемник */
-    DMA_CONFIGDATA.PRM_DATA.CH[8].DST_DATA_END_PTR = (uint32_t )&(dma_buffer[32-1]); //Адрес конца данных приемника
+    DMA_CONFIGDATA.PRM_DATA.CH[8].DST_DATA_END_PTR = (uint32_t )&(dma_buffer2[32-1]); //Адрес конца данных приемника
     DMA_CONFIGDATA.PRM_DATA.CH[8].CHANNEL_CFG_bit.DST_SIZE = DMA_CHANNEL_CFG_SRC_SIZE_Word; //Разрядность данных приемника
     DMA_CONFIGDATA.PRM_DATA.CH[8].CHANNEL_CFG_bit.DST_INC = DMA_CHANNEL_CFG_DST_INC_Word; //Инкрементируем на байт
     /* общее */
     DMA_CONFIGDATA.PRM_DATA.CH[8].CHANNEL_CFG_bit.R_POWER = 0x0; // Количество передач до переарбитрации
     DMA_CONFIGDATA.PRM_DATA.CH[8].CHANNEL_CFG_bit.N_MINUS_1 = 32-1; //Общее количество передач DMA
-    DMA_CONFIGDATA.PRM_DATA.CH[8].CHANNEL_CFG_bit.CYCLE_CTRL = DMA_CHANNEL_CFG_CYCLE_CTRL_AutoReq; //Задание типа цикла DMA 
-    
+    DMA_CONFIGDATA.PRM_DATA.CH[8].CHANNEL_CFG_bit.CYCLE_CTRL = DMA_CHANNEL_CFG_CYCLE_CTRL_Basic; //Задание типа цикла DMA 
+
+    //DMA->USEBURSTSET_bit.CH8 = 1;
     // Инциализация контроллера DMA
     DMA->ENSET_bit.CH8 = 1; //Включаем канала DMA 1 
     DMA->CFG_bit.MASTEREN = 1; //Бит разрешения работы контролера DMA
@@ -424,7 +427,29 @@ void UN_TIM2_Init(void)
     NVIC_EnableIRQ(DMA_CH8_IRQn); 
 
     DMA_ChannelMuxConfig(DMA_ChannelMux_8, DMA_ChannelMux_8_GPIOA);
+    asm("nop");
 }
+
+void updateDma() {
+    /* приемник */
+    /* общее */
+    DMA_CONFIGDATA.PRM_DATA.CH[8].CHANNEL_CFG_bit.R_POWER = 0x0; // Количество передач до переарбитрации
+    DMA_CONFIGDATA.PRM_DATA.CH[8].CHANNEL_CFG_bit.N_MINUS_1 = 32-1; //Общее количество передач DMA
+    DMA_CONFIGDATA.PRM_DATA.CH[8].CHANNEL_CFG_bit.CYCLE_CTRL = DMA_CHANNEL_CFG_CYCLE_CTRL_Basic; //Задание типа цикла DMA 
+
+    //DMA->USEBURSTSET_bit.CH8 = 1;
+    // Инциализация контроллера DMA
+    DMA->ENSET_bit.CH8 = 1; //Включаем канала DMA 1 
+
+}
+
+void reverseBuffer() {
+  for(uint8_t i = 0; i < 32; i++) {
+    dma_buffer[i] = 0xFFFFFFFF - dma_buffer2[i];
+  }
+}
+
+
 
 
 
