@@ -16,7 +16,7 @@
 uint8_t buffer_padding = 7;
 char ic_timer_prescaler = CPU_FREQUENCY_MHZ / 5;
 uint32_t dma_buffer[64] __attribute__((section(".ram_section"))) __attribute__((aligned(4))) = { 0 };
-uint32_t dma_buffer2[64] __attribute__((section(".ram_section"))) __attribute__((aligned(4))) = { 0 };
+
 char out_put = 0;
 extern uint16_t counter;
 extern uint16_t halfpulsetime;
@@ -70,25 +70,31 @@ __RAMFUNC void receiveDshotDma()
 
 __RAMFUNC void changeToOutput()
 {
-    NVIC_DisableIRQ(IC_TIMER_INT_VECTOR);
-    IC_TIMER_REGISTER->ECCTL0 = 0;
-    //IC_TIMER_REGISTER->ECCTL1 = 0;
-    IC_TIMER_REGISTER->ECEINT = 0;
-    IC_TIMER_REGISTER->ECCTL1 = ECAP_ECCTL1_CAPAPWM_Msk | ECAP_ECCTL1_APWMPOL_Msk;
+    // NVIC_DisableIRQ(IC_TIMER_INT_VECTOR);
+    // IC_TIMER_REGISTER->ECCTL0 = 0;
+    // //IC_TIMER_REGISTER->ECCTL1 = 0;
+    // IC_TIMER_REGISTER->ECEINT = 0;
+    // IC_TIMER_REGISTER->ECCTL1 = ECAP_ECCTL1_CAPAPWM_Msk | ECAP_ECCTL1_APWMPOL_Msk;
     IC_TIMER_REGISTER->PRD = 255;
     IC_TIMER_REGISTER->CMP = gcr[0];
-    IC_TIMER_REGISTER->PEINT_bit.PEINT = 1; 
-    IC_TIMER_REGISTER->ECCLR = 1;
+    // IC_TIMER_REGISTER->PEINT_bit.PEINT = 1; 
+    //IC_TIMER_REGISTER->ECCLR = 1;
 
-    counter++;
+    // counter++;
 
     IC_TIMER_REGISTER->ECCTL1_bit.CONTOST = 1;
     IC_TIMER_REGISTER->ECEINT_bit.CTRPRD = 1;
-    NVIC_EnableIRQ(IC_TIMER_INT_VECTOR);
-    NVIC_SetPriority(IC_TIMER_INT_VECTOR, 0x00);
+    // NVIC_EnableIRQ(IC_TIMER_INT_VECTOR);
+    // NVIC_SetPriority(IC_TIMER_INT_VECTOR, 0x00);
     IC_TIMER_REGISTER->ECCTL1_bit.TSCTRSTOP = 1;
-    
+    SIU->REMAPAF_bit.ECAP1EN = 1;
+    // GPIOA->DENSET_bit.PIN5 = 1;
+    GPIOA->ALTFUNCSET_bit.PIN5 = 1;
     out_put = 1;
+    DMA->ENSET_bit.CH8 = 0; //Включаем канала DMA 1 
+    DMA->CFG_bit.MASTEREN = 0; //Бит разрешения работы контролера DMA
+
+    
 }
 
 __RAMFUNC void sendDshotDma()

@@ -371,9 +371,9 @@ void ALL_GPIO_Init(void)
 }
 
 extern uint32_t dma_buffer[64];
-extern uint32_t dma_buffer2[64];
-
+uint32_t rawBuffer[64] __attribute__((section(".ram_section"))) __attribute__((aligned(4))) = { 0 };
 static volatile DMA_CtrlData_TypeDef DMA_CONFIGDATA __attribute__((aligned(1024)));
+extern uint32_t gcr[37];
 
 void UN_TIM2_Init(void) 
 {
@@ -404,14 +404,39 @@ void UN_TIM2_Init(void)
     TMR3->CTRL_bit.ON = 1;
 
     DMA->BASEPTR = (uint32_t)(&DMA_CONFIGDATA); 
+
+    RCU->PCLKCFG_bit.ECAP1EN = 1;
+    RCU->PRSTCFG_bit.ECAP1EN = 1;
+    // RCU->HCLKCFG_bit.GPIOAEN = 1;
+    // RCU->HRSTCFG_bit.GPIOAEN = 1;
+    // SIU->REMAPAF_bit.ECAP1EN = 1;
+    // GPIOA->DENSET_bit.PIN5 = 1;
+    // GPIOA->ALTFUNCSET_bit.PIN5 = 1;
+    IC_TIMER_REGISTER->ECCTL0_bit.CAPLDEN = 0;
+    IC_TIMER_REGISTER->ECCTL0_bit.CAP1POL = 1;
+    IC_TIMER_REGISTER->ECCTL0_bit.CAP3POL = 1;
+    IC_TIMER_REGISTER->ECCTL1_bit.CONTOST = 0;
+    IC_TIMER_REGISTER->ECCTL1_bit.STOPWRAP = 3;
    
     // Инициализация канала на прием RX (3-й канал DMA) 
     /* источник */
+    DMA_CONFIGDATA.PRM_DATA.CH[12].SRC_DATA_END_PTR = (uint32_t)&(gcr[1]); //Адрес источника данных 
+    DMA_CONFIGDATA.PRM_DATA.CH[12].CHANNEL_CFG_bit.SRC_SIZE = DMA_CHANNEL_CFG_SRC_SIZE_Word; //Разрядность данных источника
+    DMA_CONFIGDATA.PRM_DATA.CH[12].CHANNEL_CFG_bit.SRC_INC =  DMA_CHANNEL_CFG_DST_INC_Word; // Не инкрементируем
+    /* приемник */
+    DMA_CONFIGDATA.PRM_DATA.CH[12].DST_DATA_END_PTR = (uint32_t )(&IC_TIMER_REGISTER->CMPSHDW); //Адрес конца данных приемника
+    DMA_CONFIGDATA.PRM_DATA.CH[12].CHANNEL_CFG_bit.DST_SIZE = DMA_CHANNEL_CFG_SRC_SIZE_Word; //Разрядность данных приемника
+    DMA_CONFIGDATA.PRM_DATA.CH[12].CHANNEL_CFG_bit.DST_INC = DMA_CHANNEL_CFG_DST_INC_None; //Инкрементируем на байт
+    /* общее */
+    DMA_CONFIGDATA.PRM_DATA.CH[12].CHANNEL_CFG_bit.R_POWER = 0x0; // Количество передач до переарбитрации
+    DMA_CONFIGDATA.PRM_DATA.CH[12].CHANNEL_CFG_bit.N_MINUS_1 = 36-1; //Общее количество передач DMA
+    DMA_CONFIGDATA.PRM_DATA.CH[12].CHANNEL_CFG_bit.CYCLE_CTRL = DMA_CHANNEL_CFG_CYCLE_CTRL_Basic; //Задание типа цикла DMA 
+
     DMA_CONFIGDATA.PRM_DATA.CH[8].SRC_DATA_END_PTR = (uint32_t)(&TMR3->VALUE); //Адрес источника данных 
     DMA_CONFIGDATA.PRM_DATA.CH[8].CHANNEL_CFG_bit.SRC_SIZE = DMA_CHANNEL_CFG_SRC_SIZE_Word; //Разрядность данных источника
     DMA_CONFIGDATA.PRM_DATA.CH[8].CHANNEL_CFG_bit.SRC_INC =  DMA_CHANNEL_CFG_SRC_INC_None; // Не инкрементируем
     /* приемник */
-    DMA_CONFIGDATA.PRM_DATA.CH[8].DST_DATA_END_PTR = (uint32_t )&(dma_buffer2[32-1]); //Адрес конца данных приемника
+    DMA_CONFIGDATA.PRM_DATA.CH[8].DST_DATA_END_PTR = (uint32_t )&(rawBuffer[32-1]); //Адрес конца данных приемника
     DMA_CONFIGDATA.PRM_DATA.CH[8].CHANNEL_CFG_bit.DST_SIZE = DMA_CHANNEL_CFG_SRC_SIZE_Word; //Разрядность данных приемника
     DMA_CONFIGDATA.PRM_DATA.CH[8].CHANNEL_CFG_bit.DST_INC = DMA_CHANNEL_CFG_DST_INC_Word; //Инкрементируем на байт
     /* общее */
@@ -422,30 +447,25 @@ void UN_TIM2_Init(void)
     //DMA->USEBURSTSET_bit.CH8 = 1;
     // Инциализация контроллера DMA
     DMA->ENSET_bit.CH8 = 1; //Включаем канала DMA 1 
+    //DMA->ENSET_bit.CH12 = 1; //Включаем канала DMA 1 
     DMA->CFG_bit.MASTEREN = 1; //Бит разрешения работы контролера DMA
     // NVIC прерывания DMA
     NVIC_EnableIRQ(DMA_CH8_IRQn); 
 
     DMA_ChannelMuxConfig(DMA_ChannelMux_8, DMA_ChannelMux_8_GPIOA);
-    asm("nop");
+    DMA_ChannelMuxConfig(DMA_ChannelMux_12, DMA_ChannelMux_12_TMR3);
 }
 
 void updateDma() {
-    /* приемник */
-    /* общее */
-    DMA_CONFIGDATA.PRM_DATA.CH[8].CHANNEL_CFG_bit.R_POWER = 0x0; // Количество передач до переарбитрации
-    DMA_CONFIGDATA.PRM_DATA.CH[8].CHANNEL_CFG_bit.N_MINUS_1 = 32-1; //Общее количество передач DMA
-    DMA_CONFIGDATA.PRM_DATA.CH[8].CHANNEL_CFG_bit.CYCLE_CTRL = DMA_CHANNEL_CFG_CYCLE_CTRL_Basic; //Задание типа цикла DMA 
-
-    //DMA->USEBURSTSET_bit.CH8 = 1;
-    // Инциализация контроллера DMA
-    DMA->ENSET_bit.CH8 = 1; //Включаем канала DMA 1 
-
+  DMA_CONFIGDATA.PRM_DATA.CH[8].CHANNEL_CFG_bit.R_POWER = 0x0; // Количество передач до переарбитрации
+  DMA_CONFIGDATA.PRM_DATA.CH[8].CHANNEL_CFG_bit.N_MINUS_1 = 32-1; //Общее количество передач DMA
+  DMA_CONFIGDATA.PRM_DATA.CH[8].CHANNEL_CFG_bit.CYCLE_CTRL = DMA_CHANNEL_CFG_CYCLE_CTRL_Basic; //Задание типа цикла DMA 
+  DMA->ENSET_bit.CH8 = 1;
 }
 
 void reverseBuffer() {
   for(uint8_t i = 0; i < 32; i++) {
-    dma_buffer[i] = 0xFFFFFFFF - dma_buffer2[i];
+    dma_buffer[i] = 0xFFFFFFFF - rawBuffer[i];
   }
 }
 
