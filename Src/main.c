@@ -1723,16 +1723,16 @@ int main()
     PWM2->DBFED = dead_time_override;
 
 
-    if (VERSION_MAJOR != eepromBuffer.version.major || VERSION_MINOR != eepromBuffer.version.minor || eeprom_layout_version > eepromBuffer.eeprom_version)
-    {
-        eepromBuffer.version.major = VERSION_MAJOR;
-        eepromBuffer.version.minor = VERSION_MINOR;
-        for (size_t i = 0; i < 12; i++)
-        {
-            strlen(FIRMWARE_NAME) > i ? eepromBuffer.firmware_name[i] = (uint8_t)FIRMWARE_NAME[i] : 0;
-	    }
-	  //saveEEpromSettings();
-    }
+    // if (VERSION_MAJOR != eepromBuffer.version.major || VERSION_MINOR != eepromBuffer.version.minor || eeprom_layout_version > eepromBuffer.eeprom_version)
+    // {
+    //     eepromBuffer.version.major = VERSION_MAJOR;
+    //     eepromBuffer.version.minor = VERSION_MINOR;
+    //     for (size_t i = 0; i < 12; i++)
+    //     {
+    //         strlen(FIRMWARE_NAME) > i ? eepromBuffer.firmware_name[i] = (uint8_t)FIRMWARE_NAME[i] : 0;
+	//     }
+	//   //saveEEpromSettings();
+    // }
     
     if (eepromBuffer.dir_reversed == 1)
     {
@@ -1847,28 +1847,28 @@ int main()
         #else
     // checkForHighSignal();     // will reboot if signal line is high for 10ms
     
-    if(!servoPwm)
-    {
-        uint32_t bdshotCheck = 0;
-        for(uint32_t i = 0; i < 1500; i++)
-        {
-            if(getInputPinState())
-            {
-                //GPIOB->DATAOUTSET = 0x2000;
-                bdshotCheck++;
-            }
-            else
-            {
-                //GPIOB->DATAOUTCLR = 0x2000;
-                bdshotCheck = 0;
-            }
-            if(bdshotCheck > 500)
-            {
-                fallingEdgeTrigger = 1;
-                break;
-            }
-        }
-    }
+    // if(!servoPwm)
+    // {
+    //     uint32_t bdshotCheck = 0;
+    //     for(uint32_t i = 0; i < 1500; i++)
+    //     {
+    //         if(getInputPinState())
+    //         {
+    //             //GPIOB->DATAOUTSET = 0x2000;
+    //             bdshotCheck++;
+    //         }
+    //         else
+    //         {
+    //             //GPIOB->DATAOUTCLR = 0x2000;
+    //             bdshotCheck = 0;
+    //         }
+    //         if(bdshotCheck > 500)
+    //         {
+    //             fallingEdgeTrigger = 1;
+    //             break;
+    //         }
+    //     }
+    // }
 
     //receiveDshotDma();
 

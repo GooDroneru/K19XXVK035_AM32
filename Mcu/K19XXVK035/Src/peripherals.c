@@ -377,8 +377,8 @@ extern uint32_t gcr[37];
 
 void UN_TIM2_Init(void) 
 {
-    // RCU->PCLKCFG_bit.ECAP1EN = 1;
-    // RCU->PRSTCFG_bit.ECAP1EN = 1;
+    RCU->PCLKCFG_bit.ECAP1EN = 1;
+    RCU->PRSTCFG_bit.ECAP1EN = 1;
     RCU->HCLKCFG_bit.GPIOAEN = 1;
     RCU->HRSTCFG_bit.GPIOAEN = 1;
     //SIU->REMAPAF_bit.ECAP1EN = 1;
@@ -405,8 +405,6 @@ void UN_TIM2_Init(void)
 
     DMA->BASEPTR = (uint32_t)(&DMA_CONFIGDATA); 
 
-    RCU->PCLKCFG_bit.ECAP1EN = 1;
-    RCU->PRSTCFG_bit.ECAP1EN = 1;
     // RCU->HCLKCFG_bit.GPIOAEN = 1;
     // RCU->HRSTCFG_bit.GPIOAEN = 1;
     // SIU->REMAPAF_bit.ECAP1EN = 1;
@@ -451,6 +449,9 @@ void UN_TIM2_Init(void)
     DMA->CFG_bit.MASTEREN = 1; //Бит разрешения работы контролера DMA
     // NVIC прерывания DMA
     NVIC_EnableIRQ(DMA_CH8_IRQn); 
+    NVIC_SetPriority(DMA_CH8_IRQn, 0xA);
+    NVIC_EnableIRQ(DMA_CH12_IRQn); 
+    NVIC_SetPriority(DMA_CH12_IRQn, 0xA);
 
     DMA_ChannelMuxConfig(DMA_ChannelMux_8, DMA_ChannelMux_8_GPIOA);
     DMA_ChannelMuxConfig(DMA_ChannelMux_12, DMA_ChannelMux_12_TMR3);
@@ -461,6 +462,13 @@ void updateDma() {
   DMA_CONFIGDATA.PRM_DATA.CH[8].CHANNEL_CFG_bit.N_MINUS_1 = 32-1; //Общее количество передач DMA
   DMA_CONFIGDATA.PRM_DATA.CH[8].CHANNEL_CFG_bit.CYCLE_CTRL = DMA_CHANNEL_CFG_CYCLE_CTRL_Basic; //Задание типа цикла DMA 
   DMA->ENSET_bit.CH8 = 1;
+}
+
+void updateDmaTransmit() {
+  DMA_CONFIGDATA.PRM_DATA.CH[12].CHANNEL_CFG_bit.R_POWER = 0x0; // Количество передач до переарбитрации
+  DMA_CONFIGDATA.PRM_DATA.CH[12].CHANNEL_CFG_bit.N_MINUS_1 = 36-1; //Общее количество передач DMA
+  DMA_CONFIGDATA.PRM_DATA.CH[12].CHANNEL_CFG_bit.CYCLE_CTRL = DMA_CHANNEL_CFG_CYCLE_CTRL_Basic; //Задание типа цикла DMA 
+  DMA->ENSET_bit.CH12 = 1;
 }
 
 void reverseBuffer() {
