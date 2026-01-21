@@ -174,3 +174,8 @@ __RAMFUNC void DMA_CH8_IRQHandler()
     updateDma();
     GPIOA->DATAOUTTGL_bit.PIN7 = 1;
 }
+
+__RAMFUNC void DMA_CH12_IRQHandler()
+{   
+    transfercomplete();
+}

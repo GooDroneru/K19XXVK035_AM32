@@ -59,6 +59,7 @@ __RAMFUNC void changeToInput()
     // {
     //     buffersize = 32;
     // }
+    TMR3->DMAREQ_bit.EN = 0;
     DMA->ENSET_bit.CH12 = 0; //Включаем канала DMA 1 
     DMA->CFG_bit.MASTEREN = 0; //Бит разрешения работы контролера DMA
     SIU->REMAPAF_bit.ECAP1EN = 0;
@@ -91,26 +92,20 @@ __RAMFUNC void changeToOutput()
     // //IC_TIMER_REGISTER->ECCTL1 = 0;
     // IC_TIMER_REGISTER->ECEINT = 0;
     // IC_TIMER_REGISTER->ECCTL1 = ECAP_ECCTL1_CAPAPWM_Msk | ECAP_ECCTL1_APWMPOL_Msk;
-    IC_TIMER_REGISTER->ECCTL0 = 0;
-    IC_TIMER_REGISTER->ECCTL1 = 0;
-    IC_TIMER_REGISTER->ECCTL1_bit.CAPAPWM = 1;
-    IC_TIMER_REGISTER->PRD = 255;
-    IC_TIMER_REGISTER->CMP = gcr[0];
-    IC_TIMER_REGISTER->TSCTR = 0;
+
     // IC_TIMER_REGISTER->PEINT_bit.PEINT = 1; 
     //IC_TIMER_REGISTER->ECCLR = 1;
+    TMR3->CTRL_bit.ON = 0;
     TMR3->VALUE = 125;
     TMR3->LOAD = 255;
-    TMR3->CTRL_bit.ON = 0;
+    TMR3->DMAREQ_bit.EN = 1;
+    IC_TIMER_REGISTER->TSCTR = 0;
+    
     // counter++;
 
     IC_TIMER_REGISTER->ECCTL1_bit.CONTOST = 1;
-    IC_TIMER_REGISTER->ECEINT_bit.CTRPRD = 1;
-    // NVIC_EnableIRQ(IC_TIMER_INT_VECTOR);
-    // NVIC_SetPriority(IC_TIMER_INT_VECTOR, 0x00);
     IC_TIMER_REGISTER->ECCTL1_bit.TSCTRSTOP = 1;
     SIU->REMAPAF_bit.ECAP1EN = 1;
-    // GPIOA->DENSET_bit.PIN5 = 1;
     GPIOA->ALTFUNCSET_bit.PIN5 = 1;
     out_put = 1;
     DMA->ENSET_bit.CH8 = 0; //Включаем канала DMA 1 
@@ -122,7 +117,7 @@ __RAMFUNC void changeToOutput()
 
 __RAMFUNC void sendDshotDma()
 {
-    //changeToOutput();
+    changeToOutput();
 }
 
 uint8_t getInputPinState()
