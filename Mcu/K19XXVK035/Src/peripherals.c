@@ -413,9 +413,11 @@ void UN_TIM2_Init(void)
     // GPIOA->ALTFUNCSET_bit.PIN5 = 1;
     IC_TIMER_REGISTER->ECCTL1_bit.CAPAPWM = 1;
     IC_TIMER_REGISTER->PRD = 255;
-    IC_TIMER_REGISTER->CMP = 260;
+    IC_TIMER_REGISTER->CMP = 255;
     // Инициализация канала на прием RX (3-й канал DMA) 
     /* источник */
+    DMA->ENSET_bit.CH8 = 1; //Включаем канала DMA 1 
+    DMA->ENSET_bit.CH12 = 1; //Включаем канала DMA 1 
     DMA_CONFIGDATA.PRM_DATA.CH[12].SRC_DATA_END_PTR = (uint32_t)&(gcr[36]); //Адрес источника данных 
     DMA_CONFIGDATA.PRM_DATA.CH[12].CHANNEL_CFG_bit.SRC_SIZE = DMA_CHANNEL_CFG_SRC_SIZE_Word; //Разрядность данных источника
     DMA_CONFIGDATA.PRM_DATA.CH[12].CHANNEL_CFG_bit.SRC_INC =  DMA_CHANNEL_CFG_DST_INC_Word; // Не инкрементируем
@@ -425,7 +427,7 @@ void UN_TIM2_Init(void)
     DMA_CONFIGDATA.PRM_DATA.CH[12].CHANNEL_CFG_bit.DST_INC = DMA_CHANNEL_CFG_DST_INC_None; //Инкрементируем на байт
     /* общее */
     DMA_CONFIGDATA.PRM_DATA.CH[12].CHANNEL_CFG_bit.R_POWER = 0x0; // Количество передач до переарбитрации
-    DMA_CONFIGDATA.PRM_DATA.CH[12].CHANNEL_CFG_bit.N_MINUS_1 = 37-1; //Общее количество передач DMA
+    DMA_CONFIGDATA.PRM_DATA.CH[12].CHANNEL_CFG_bit.N_MINUS_1 = 30 - 1; //Общее количество передач DMA
     DMA_CONFIGDATA.PRM_DATA.CH[12].CHANNEL_CFG_bit.CYCLE_CTRL = DMA_CHANNEL_CFG_CYCLE_CTRL_Basic; //Задание типа цикла DMA 
 
     DMA_CONFIGDATA.PRM_DATA.CH[8].SRC_DATA_END_PTR = (uint32_t)(&TMR3->VALUE); //Адрес источника данных 
@@ -437,25 +439,31 @@ void UN_TIM2_Init(void)
     DMA_CONFIGDATA.PRM_DATA.CH[8].CHANNEL_CFG_bit.DST_INC = DMA_CHANNEL_CFG_DST_INC_Word; //Инкрементируем на байт
     /* общее */
     DMA_CONFIGDATA.PRM_DATA.CH[8].CHANNEL_CFG_bit.R_POWER = 0x0; // Количество передач до переарбитрации
-    DMA_CONFIGDATA.PRM_DATA.CH[8].CHANNEL_CFG_bit.N_MINUS_1 = 32-1; //Общее количество передач DMA
+    DMA_CONFIGDATA.PRM_DATA.CH[8].CHANNEL_CFG_bit.N_MINUS_1 = 32 - 1; //Общее количество передач DMA
     DMA_CONFIGDATA.PRM_DATA.CH[8].CHANNEL_CFG_bit.CYCLE_CTRL = DMA_CHANNEL_CFG_CYCLE_CTRL_Basic; //Задание типа цикла DMA 
 
     //DMA->USEBURSTSET_bit.CH8 = 1;
     // Инциализация контроллера DMA
-    DMA->ENSET_bit.CH8 = 1; //Включаем канала DMA 1 
+
     //DMA->ENSET_bit.CH12 = 1; //Включаем канала DMA 1 
-    DMA->CFG_bit.MASTEREN = 1; //Бит разрешения работы контролера DMA
+    //DMA->CFG_bit.MASTEREN = 1; //Бит разрешения работы контролера DMA
     // NVIC прерывания DMA
-    NVIC_EnableIRQ(DMA_CH8_IRQn); 
-    NVIC_SetPriority(DMA_CH8_IRQn, 0xA);
-    NVIC_EnableIRQ(DMA_CH12_IRQn); 
-    NVIC_SetPriority(DMA_CH12_IRQn, 0xA);
+    // NVIC_EnableIRQ(DMA_CH8_IRQn); 
+    // NVIC_SetPriority(DMA_CH8_IRQn, 0xA);
+
 
     DMA_ChannelMuxConfig(DMA_ChannelMux_8, DMA_ChannelMux_8_GPIOA);
     DMA_ChannelMuxConfig(DMA_ChannelMux_12, DMA_ChannelMux_12_TMR3);
+    DMA->ENSET_bit.CH8 = 0; //Включаем канала DMA 1 
+    DMA->ENSET_bit.CH12 = 0; //Включаем канала DMA 1 
+    DMA->CFG_bit.MASTEREN = 1; //Бит разрешения работы контролера DMA
 }
 
 void updateDma() {
+  NVIC_DisableIRQ(DMA_CH12_IRQn); 
+  NVIC_EnableIRQ(DMA_CH8_IRQn); 
+  NVIC_SetPriority(DMA_CH8_IRQn, 0xA);
+  DMA->ENSET_bit.CH12 = 0;
   DMA_CONFIGDATA.PRM_DATA.CH[8].CHANNEL_CFG_bit.R_POWER = 0x0; // Количество передач до переарбитрации
   DMA_CONFIGDATA.PRM_DATA.CH[8].CHANNEL_CFG_bit.N_MINUS_1 = 32-1; //Общее количество передач DMA
   DMA_CONFIGDATA.PRM_DATA.CH[8].CHANNEL_CFG_bit.CYCLE_CTRL = DMA_CHANNEL_CFG_CYCLE_CTRL_Basic; //Задание типа цикла DMA 
@@ -463,8 +471,12 @@ void updateDma() {
 }
 
 void updateDmaTransmit() {
+  NVIC_DisableIRQ(DMA_CH8_IRQn); 
+  NVIC_EnableIRQ(DMA_CH12_IRQn); 
+  NVIC_SetPriority(DMA_CH12_IRQn, 0xA);
+  DMA->ENSET_bit.CH8 = 0;
   DMA_CONFIGDATA.PRM_DATA.CH[12].CHANNEL_CFG_bit.R_POWER = 0x0; // Количество передач до переарбитрации
-  DMA_CONFIGDATA.PRM_DATA.CH[12].CHANNEL_CFG_bit.N_MINUS_1 = 36-1; //Общее количество передач DMA
+  DMA_CONFIGDATA.PRM_DATA.CH[12].CHANNEL_CFG_bit.N_MINUS_1 = 30-1; //Общее количество передач DMA
   DMA_CONFIGDATA.PRM_DATA.CH[12].CHANNEL_CFG_bit.CYCLE_CTRL = DMA_CHANNEL_CFG_CYCLE_CTRL_Basic; //Задание типа цикла DMA 
   DMA->ENSET_bit.CH12 = 1;
 }

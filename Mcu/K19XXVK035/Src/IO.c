@@ -59,19 +59,18 @@ __RAMFUNC void changeToInput()
     // {
     //     buffersize = 32;
     // }
+    updateDma();
     TMR3->DMAREQ_bit.EN = 0;
-    DMA->ENSET_bit.CH12 = 0; //Включаем канала DMA 1 
-    DMA->CFG_bit.MASTEREN = 0; //Бит разрешения работы контролера DMA
+    //DMA->ENSET_bit.CH12 = 0; //Включаем канала DMA 1 
+    //DMA->CFG_bit.MASTEREN = 0; //Бит разрешения работы контролера DMA
     SIU->REMAPAF_bit.ECAP1EN = 0;
     // GPIOA->DENSET_bit.PIN5 = 1;
     GPIOA->ALTFUNCCLR_bit.PIN5 = 1;
     TMR3->CTRL_bit.ON = 0;
     TMR3->VALUE = 0xFFFFFFFF;
     TMR3->LOAD = 0xFFFFFFFF;
-
     IC_TIMER_REGISTER->ECCTL1_bit.TSCTRSTOP = 0;
     IC_TIMER_REGISTER->TSCTR = 0;
-    updateDma();
     DMA->CFG_bit.MASTEREN = 1; //Бит разрешения работы контролера DMA
     TMR3->CTRL_bit.ON = 1;
 
@@ -95,6 +94,8 @@ __RAMFUNC void changeToOutput()
 
     // IC_TIMER_REGISTER->PEINT_bit.PEINT = 1; 
     //IC_TIMER_REGISTER->ECCLR = 1;
+    //DMA->ENSET_bit.CH8 = 0; //Включаем канала DMA 1 
+    updateDmaTransmit();
     TMR3->CTRL_bit.ON = 0;
     TMR3->VALUE = 125;
     TMR3->LOAD = 255;
@@ -108,9 +109,8 @@ __RAMFUNC void changeToOutput()
     SIU->REMAPAF_bit.ECAP1EN = 1;
     GPIOA->ALTFUNCSET_bit.PIN5 = 1;
     out_put = 1;
-    DMA->ENSET_bit.CH8 = 0; //Включаем канала DMA 1 
-    DMA->CFG_bit.MASTEREN = 0; //Бит разрешения работы контролера DMA
-    updateDmaTransmit();
+
+    //DMA->CFG_bit.MASTEREN = 0; //Бит разрешения работы контролера DMA
     DMA->CFG_bit.MASTEREN = 1; //Бит разрешения работы контролера DMA
     TMR3->CTRL_bit.ON = 1;
 }

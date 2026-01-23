@@ -6,6 +6,7 @@
 #include "comparator.h"
 #include "functions.h"
 #include "peripherals.h"
+#include "IO.h"
 
 extern void transfercomplete();
 extern void PeriodElapsedCallback();
@@ -164,6 +165,8 @@ __RAMFUNC void TMR0_IRQHandler(void)
 //     IC_TIMER_REGISTER->ECCLR_bit.INT = 1;
 //     IC_TIMER_REGISTER->PEINT_bit.PEINT = 1;
 // }
+
+extern char out_put;
 
 __RAMFUNC void DMA_CH8_IRQHandler()
 {   

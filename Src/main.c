@@ -1722,7 +1722,28 @@ int main()
     PWM2->DBRED = dead_time_override;
     PWM2->DBFED = dead_time_override;
 
+    // for(uint8_t i = 0; i < 25; i++) {
+    //     if(i % 2 == 0) {
+    //         gcr[i] = 256;
+    //     }
+    //     else {
+    //         gcr[i] = 0;
+    //     }
+    //     gcr[25] = 0;
+    //     gcr[26] = 0;
+    //     gcr[27] = 0;
+    //     gcr[28] = 0;
+    //     gcr[29] = 0;
+    //     gcr[30] = 0;
+    // }
 
+    //     changeToOutput();
+    // while(1) { 
+
+    // }
+
+
+    asm("nop");
     // if (VERSION_MAJOR != eepromBuffer.version.major || VERSION_MINOR != eepromBuffer.version.minor || eeprom_layout_version > eepromBuffer.eeprom_version)
     // {
     //     eepromBuffer.version.major = VERSION_MAJOR;
@@ -1870,7 +1891,7 @@ int main()
     //     }
     // }
 
-    //receiveDshotDma();
+    receiveDshotDma();
 
     if (drive_by_rpm)
     {
