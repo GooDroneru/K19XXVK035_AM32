@@ -425,6 +425,7 @@ void UN_TIM2_Init(void)
     DMA->CFG_bit.MASTEREN = 1; //Бит разрешения работы контролера DMA
     // NVIC прерывания DMA
     NVIC_EnableIRQ(DMA_CH8_IRQn); 
+    NVIC_SetPriority(DMA_CH8_IRQn, 0xA);
 
     DMA_ChannelMuxConfig(DMA_ChannelMux_8, DMA_ChannelMux_8_GPIOA);
     asm("nop");

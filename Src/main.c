@@ -1697,7 +1697,7 @@ int main()
     }
     if(hardwareInfo.deviceId[4] == '8') //20R
     {
-        deadTime = 45;
+        deadTime = 20;
     }
     else if(hardwareInfo.deviceId[3] == '1') //20R
     {
