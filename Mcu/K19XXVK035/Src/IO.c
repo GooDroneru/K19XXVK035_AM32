@@ -100,7 +100,7 @@ __RAMFUNC void changeToOutput()
     //DMA->ENSET_bit.CH8 = 0; //Включаем канала DMA 1 
     updateDmaTransmit();
     TMR3->CTRL_bit.ON = 0;
-    TMR3->VALUE = 255;
+    TMR3->VALUE = 125;
     TMR3->LOAD = 255;
     TMR3->DMAREQ_bit.EN = 1;
     IC_TIMER_REGISTER->TSCTR = 0;
