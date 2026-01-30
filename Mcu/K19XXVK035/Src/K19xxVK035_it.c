@@ -126,62 +126,17 @@ __RAMFUNC void TMR0_IRQHandler(void)
     //}
 }
 
-// __RAMFUNC void ECAP1_IRQHandler()
-// {
-//     if(IC_TIMER_REGISTER->ECFLG_bit.CEVT3 && IC_TIMER_REGISTER->ECEINT_bit.CEVT3) {
-//         // dma_buffer[counter++] = IC_TIMER_REGISTER->CAP2;
-//         // dma_buffer[counter++] = IC_TIMER_REGISTER->CAP3;
-//         memcpy(&dma_buffer[counter], &IC_TIMER_REGISTER->CAP0, 4*sizeof(uint32_t));
-//         counter += 4;
-//         IC_TIMER_REGISTER->ECCLR_bit.INT = 1;
-//         IC_TIMER_REGISTER->PEINT_bit.PEINT = 1; 
-//         IC_TIMER_REGISTER->ECCLR_bit.CEVT3 = 1;
-
-//         if(counter >= buffersize) {
-//             IC_TIMER_REGISTER->ECCTL0_bit.CAPLDEN = 0;
-//             IC_TIMER_REGISTER->ECEINT_bit.CEVT3 = 0;
-//             IC_TIMER_REGISTER->ECCTL1_bit.TSCTRSTOP = 0;
-//             NVIC_DisableIRQ(IC_TIMER_INT_VECTOR);
-//             counter = 0;
-//             //memcpy(&dma_buffer[0], &dma_buffer2[0], 32*sizeof(uint32_t));
-//             transfercomplete();
-//             input_ready = 1;
-//         }     
-//     }
-//     if(IC_TIMER_REGISTER->ECFLG_bit.CTRPRD && IC_TIMER_REGISTER->ECEINT_bit.CTRPRD) {
-//         IC_TIMER_REGISTER->ECCLR_bit.INT = 1;
-//         IC_TIMER_REGISTER->PEINT_bit.PEINT = 1;
-//         IC_TIMER_REGISTER->ECCLR_bit.CTRPRD = 1;
-//         if(counter < (37)) {
-//             IC_TIMER_REGISTER->CMPSHDW = gcr[counter];
-//             counter++;
-//         }
-//         else {
-//             counter = 0;
-//             NVIC_DisableIRQ(IC_TIMER_INT_VECTOR);
-//             transfercomplete();
-//         }
-//     }
-//     IC_TIMER_REGISTER->ECCLR_bit.INT = 1;
-//     IC_TIMER_REGISTER->PEINT_bit.PEINT = 1;
-// }
-
-extern char out_put;
 
 __RAMFUNC void DMA_CH8_IRQHandler()
 {   
-
     TMR3->VALUE = 0xFFFFFFFF;
     reverseBuffer();
-    //updateDma();
     transfercomplete();
     input_ready = 1;
-    GPIOA->DATAOUTTGL_bit.PIN7 = 1;
 }
 
 __RAMFUNC void DMA_CH12_IRQHandler()
 {   
     IC_TIMER_REGISTER->CMPSHDW = 0;
-    //GPIOA->ALTFUNCCLR_bit.PIN5 = 1;
     transfercomplete();
 }

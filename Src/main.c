@@ -346,7 +346,7 @@ typedef struct version_s {
 
 version_t firmware_version = {
         .major = 1,
-        .minor = 5,
+        .minor = 6,
 };
 
 // const char filename[30] __attribute__((section(".file_name"))) = FILE_NAME;
@@ -1697,7 +1697,7 @@ int main()
     }
     if(hardwareInfo.deviceId[4] == '8') //20R
     {
-        deadTime = 45;
+        deadTime = 30;
     }
     else if(hardwareInfo.deviceId[3] == '1') //20R
     {
