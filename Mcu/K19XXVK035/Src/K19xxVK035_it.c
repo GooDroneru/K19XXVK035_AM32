@@ -170,15 +170,18 @@ extern char out_put;
 
 __RAMFUNC void DMA_CH8_IRQHandler()
 {   
+
     TMR3->VALUE = 0xFFFFFFFF;
     reverseBuffer();
+    //updateDma();
     transfercomplete();
     input_ready = 1;
-    updateDma();
     GPIOA->DATAOUTTGL_bit.PIN7 = 1;
 }
 
 __RAMFUNC void DMA_CH12_IRQHandler()
 {   
+    IC_TIMER_REGISTER->CMPSHDW = 0;
+    //GPIOA->ALTFUNCCLR_bit.PIN5 = 1;
     transfercomplete();
 }
