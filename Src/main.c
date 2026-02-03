@@ -508,6 +508,7 @@ char step = 1;
 uint32_t commutation_interval = 12500;
 uint16_t waitTime = 0;
 uint16_t signaltimeout = 0;
+uint8_t multirotor = 0;
 
 float doPidCalculations(struct fastPID* pidnow, int actual, int target)
 {
@@ -1701,7 +1702,12 @@ int main()
     }
     else if(hardwareInfo.deviceId[3] == '1') //20R
     {
-        deadTime = 90;
+        deadTime = 60;
+    }
+
+
+    if(hardwareInfo.deviceId[11] == 'M') {
+        multirotor = 1;
     }
 
     gate_drive_offset = deadTime;
@@ -1713,7 +1719,7 @@ int main()
     initCorePeripherals();
     enableCorePeripherals();
     loadEEpromSettings();
-    delayMillis(1000);
+    delayMillis(500);
 
     PWM0->DBRED = dead_time_override;
     PWM0->DBFED = dead_time_override;
@@ -1904,11 +1910,11 @@ int main()
 
     while (1)
     {
-        if (input_ready)
-        {
-            processDshot();
-            input_ready = 0;
-        }
+        // if (input_ready)
+        // {
+        //     processDshot();
+        //     input_ready = 0;
+        // }
         RELOAD_WATCHDOG_COUNTER();
         e_com_time = ((commutation_intervals[0] + commutation_intervals[1] + commutation_intervals[2] + commutation_intervals[3] + commutation_intervals[4] + commutation_intervals[5]) + 4) >> 1; // COMMUTATION INTERVAL IS 0.5US INCREMENTS
         if (eepromBuffer.variable_pwm)
@@ -2048,8 +2054,10 @@ int main()
         ADC_SEQ_SwStartCmd();
         degrees_celsius = getConvertedDegrees();
         battery_voltage = (/*(7 * battery_voltage) + */((ADC_raw_volts * 3300 / 4095 * VOLTAGE_DIVIDER) / 100))/* >> 3*/;
-        smoothed_raw_current = getSmoothedCurrent();
-        actual_current = ((smoothed_raw_current * 3300 / 41) - (CURRENT_OFFSET * 100)) / (MILLIVOLT_PER_AMP);
+        if(!multirotor) {
+            smoothed_raw_current = getSmoothedCurrent();
+            actual_current = ((smoothed_raw_current * 3300 / 41) - (CURRENT_OFFSET * 100)) / (MILLIVOLT_PER_AMP);
+        }
         // uint16_t seqDelay = ((PWM0->CMPA_bit.CMPA * 2) / 3) + 1;
         // if(!eepromBuffer.variable_pwm) {
         //     if(PWM0->TBCTL_bit.CLKDIV == PWM_TBCTL_CLKDIV_Div1) {

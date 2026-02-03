@@ -22,6 +22,8 @@ char out_put = 0;
 extern uint16_t counter;
 extern uint16_t halfpulsetime;
 extern char fallingEdgeTrigger;
+extern uint16_t periodTime;
+extern uint16_t bitShift;
 
 __RAMFUNC void changeToInput()
 {
@@ -51,8 +53,8 @@ __RAMFUNC void changeToOutput()
 {
     updateDmaTransmit();
     TMR3->CTRL_bit.ON = 0;
-    TMR3->VALUE = 125;
-    TMR3->LOAD = 255;
+    TMR3->VALUE = periodTime / 2;
+    TMR3->LOAD = periodTime;
     TMR3->DMAREQ_bit.EN = 1;
     IC_TIMER_REGISTER->TSCTR = 0;
     // counter++;

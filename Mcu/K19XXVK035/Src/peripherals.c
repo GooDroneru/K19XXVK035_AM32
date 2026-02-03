@@ -413,7 +413,7 @@ void UN_TIM2_Init(void)
     // GPIOA->ALTFUNCSET_bit.PIN5 = 1;
     IC_TIMER_REGISTER->ECCTL1_bit.CAPAPWM = 1;
     IC_TIMER_REGISTER->ECCTL1_bit.APWMPOL = 1;
-    IC_TIMER_REGISTER->PRD = 255;
+    IC_TIMER_REGISTER->PRD = 256;
     IC_TIMER_REGISTER->CMP = 0;
     // Инициализация канала на прием RX (3-й канал DMA) 
     /* источник */
@@ -443,6 +443,9 @@ void UN_TIM2_Init(void)
     DMA_CONFIGDATA.PRM_DATA.CH[8].CHANNEL_CFG_bit.N_MINUS_1 = 32 - 1; //Общее количество передач DMA
     DMA_CONFIGDATA.PRM_DATA.CH[8].CHANNEL_CFG_bit.CYCLE_CTRL = DMA_CHANNEL_CFG_CYCLE_CTRL_Basic; //Задание типа цикла DMA 
 
+
+    NVIC_EnableIRQ(ADC_SEQ1_IRQn);
+    NVIC_SetPriority(ADC_SEQ1_IRQn, 2);
     //DMA->USEBURSTSET_bit.CH8 = 1;
     // Инциализация контроллера DMA
 
