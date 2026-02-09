@@ -1799,7 +1799,7 @@ int main()
         eepromBuffer.comp_pwm = 1;
         //playStartupTune();
         eepromBuffer.advance_level = 2;
-        motor_kv = 300;
+        motor_kv = 2200;
         eepromBuffer.motor_poles = 14;
         eepromBuffer.stall_protection = 0;
         eepromBuffer.brake_on_stop = 1;
@@ -1821,9 +1821,14 @@ int main()
         dshot = 1;
         servoPwm = 0;
         EDT_ARMED = 1;
+        eepromBuffer.no_polling_start = 1;
 #endif
 
-
+#ifndef DEBUG_MODE
+    zero_input_count = 0;
+    MX_IWDG_Init();
+    RELOAD_WATCHDOG_COUNTER();
+#endif
 #ifdef USE_CRSF_INPUT
 	inputSet = 1;
 	playStartupTune();
@@ -1856,11 +1861,7 @@ int main()
         #else
     playStartupTune();
         #endif
-        #ifndef DEBUG_MODE
-            zero_input_count = 0;
-            MX_IWDG_Init();
-            RELOAD_WATCHDOG_COUNTER();
-        #endif
+
 
         #ifdef GIMBAL_MODE
             eepromBuffer.bi_direction = 1;
@@ -1872,30 +1873,6 @@ int main()
         inputSet = 1;
 
         #else
-    // checkForHighSignal();     // will reboot if signal line is high for 10ms
-    
-    // if(!servoPwm)
-    // {
-    //     uint32_t bdshotCheck = 0;
-    //     for(uint32_t i = 0; i < 1500; i++)
-    //     {
-    //         if(getInputPinState())
-    //         {
-    //             //GPIOB->DATAOUTSET = 0x2000;
-    //             bdshotCheck++;
-    //         }
-    //         else
-    //         {
-    //             //GPIOB->DATAOUTCLR = 0x2000;
-    //             bdshotCheck = 0;
-    //         }
-    //         if(bdshotCheck > 500)
-    //         {
-    //             fallingEdgeTrigger = 1;
-    //             break;
-    //         }
-    //     }
-    // }
 
     receiveDshotDma();
 
