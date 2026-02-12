@@ -192,10 +192,11 @@ __RAMFUNC void transfercomplete()
             {
                 if (getInputPinState())
                 {
+                    buffersize = 3;
                 }
                 else
                 {
-                    buffersize = 4;
+                    buffersize = 2;
 	                computeServoInput();
                 }
                 receiveDshotDma();

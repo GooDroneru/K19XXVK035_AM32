@@ -57,7 +57,8 @@ void SystemCoreClockUpdate(void)
 }
 
 void ClkInit()
-{
+{   
+
     uint32_t timeout_counter = 0;
     uint32_t sysclk_source;
 

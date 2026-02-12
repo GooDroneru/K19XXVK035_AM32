@@ -44,7 +44,13 @@ __RAMFUNC void changeToInput()
 
 
 __RAMFUNC void receiveDshotDma()
-{    out_put = 0;
+{   
+    if(servoPwm == 1) {
+        //GPIOA->INTEDGECLR_bit.PIN5 = 1;
+        //GPIOA->INTPOLSET_bit.PIN5 = 1;
+    }
+    //setDmaCnt(buffersize);
+    out_put = 0;
     changeToInput();
 
 }

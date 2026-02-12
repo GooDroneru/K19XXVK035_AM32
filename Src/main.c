@@ -1814,8 +1814,8 @@ int main()
         min_startup_duty = (minStartupDuty + DEAD_TIME) * TIMER1_MAX_ARR / 2000;
         minimum_duty_cycle = (minStartupDuty/ 2 + DEAD_TIME/3) * TIMER1_MAX_ARR / 2000 ;
         stall_protect_minimum_duty = minimum_duty_cycle+10;
-        //eepromBuffer.use_sine_start = 1;
-        eepromBuffer.use_sine_start = 0;
+        eepromBuffer.use_sine_start = 1;
+        //eepromBuffer.use_sine_start = 0;
         servo_low_threshold = 1100;
         servo_high_threshold = 1900;
         dshot = 1;
