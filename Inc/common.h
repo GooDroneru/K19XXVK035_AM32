@@ -26,13 +26,44 @@ extern char ic_timer_prescaler;
 extern uint8_t buffersize;
 extern char output_timer_prescaler;
 extern uint8_t compute_dshot_flag;
-extern char input_ready;
+extern uint16_t battery_voltage;
+extern int16_t actual_current;
+extern uint16_t e_rpm;
+extern uint32_t average_interval;
+
+
+#ifdef STMICRO
+extern GPIO_TypeDef* current_GPIO_PORT;
+#if !defined(MCU_F031) && !defined(MCU_G031)
+extern COMP_TypeDef* active_COMP;
+#endif
+#endif
+#ifdef GIGADEVICES
+extern uint32_t current_GPIO_PORT;
+#endif
+#ifdef ARTERY
+extern uint32_t current_GPIO_PORT;
+#endif
 extern uint32_t current_EXTI_LINE;
 extern int e_com_time;
-extern char dshot_extended_telemetry;
 extern char EDT_ARM_ENABLE;
 extern char EDT_ARMED;
 extern uint16_t send_extended_dshot;
+#ifdef NEED_INPUT_READY
+extern volatile char input_ready;
+#endif
+// typedef struct PID{
+//	float error;
+//	float Kp;
+//	float Ki;
+//	float Kd;
+//	float integral;
+//	float derivative;
+//	float last_error;
+//	float pid_output;
+//	int16_t integral_limit;
+//	int16_t output_limit;
+// }PID;
 
 typedef struct fastPID {
 	int32_t error;

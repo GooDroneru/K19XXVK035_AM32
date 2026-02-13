@@ -5,7 +5,7 @@
  *      Author: Alka
  */
 
-#include "main.h"
+#include <Mcu/K19XXVK035/Inc/main.h>
 
 #ifndef INC_DSHOT_H_
 #define INC_DSHOT_H_
@@ -24,5 +24,7 @@ extern char dir_reversed;
 extern char buffer_divider;
 extern uint8_t last_dshot_command;
 extern uint32_t commutation_interval;
+
+// int e_com_time;
 
 #endif /* INC_DSHOT_H_ */

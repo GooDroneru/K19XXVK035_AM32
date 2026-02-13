@@ -5,12 +5,12 @@
  *      Author: Alka
  */
 
+#include <Mcu/K19XXVK035/Inc/peripherals.h>
+#include <Mcu/K19XXVK035/Inc/phaseouts.h>
 #include "sounds.h"
 #include "common.h"
 #include "eeprom.h"
 #include "functions.h"
-#include "peripherals.h"
-#include "phaseouts.h"
 #include "targets.h"
 
 uint8_t beep_volume;
@@ -25,9 +25,8 @@ void pause(uint16_t ms)
 
 void setVolume(uint8_t volume)
 {
-    if (volume > 30)
-    {
-		volume = 30;
+    if (volume > 11) {
+		volume = 11;
 	}
 	beep_volume = volume * 2;           // volume variable from 0 - 11 equates to CCR value of 0-22
 }
@@ -41,8 +40,10 @@ void setCaptureCompare()
 void playBJNote(uint16_t freq, uint16_t bduration)
 { // hz and ms
 	uint16_t timerOne_reload = TIM1_AUTORELOAD;
+
     SET_PRESCALER_PWM(10);
     timerOne_reload = CPU_FREQUENCY_MHZ*100000 / freq;
+
     SET_AUTO_RELOAD_PWM(timerOne_reload);
     SET_DUTY_CYCLE_ALL(beep_volume * timerOne_reload / TIM1_AUTORELOAD); // volume of the beep, (duty cycle) don't
                                                                          // go above 25 out of 2000
@@ -61,18 +62,15 @@ void playBlueJayTune()
     uint16_t frequency;
 	comStep(3);
     // read_flash_bin(blueJayTuneBuffer , EEPROM_START_ADD + 48 , 128);
-    for (int i = 52; i < 176; i += 2)
-    {
+    for (int i = 52; i < 176; i += 2) {
         RELOAD_WATCHDOG_COUNTER();
 		signaltimeout = 0;
-        if (eepromBuffer.buffer[i] == 255)
-        {
+
+        if (eepromBuffer.buffer[i] == 255) {
 			full_time_count++;
-        }
-        else
-        {
-            if (eepromBuffer.buffer[i + 1] == 0)
-            {
+
+        } else {
+            if (eepromBuffer.buffer[i + 1] == 0) {
                 duration = full_time_count * 254 + eepromBuffer.buffer[i];
                 SET_DUTY_CYCLE_ALL(0);
 				delayMillis(duration);
@@ -98,7 +96,7 @@ void playBlueJayTune()
 void playStartupTune()
 {
 	__disable_irq();
-    signaltimeout = 0;
+
     //uint8_t value = *(uint8_t*)(EEPROM_START_ADD + 48);
 //    if (value != 0xFF) {
 //		playBlueJayTune();
@@ -109,12 +107,12 @@ void playStartupTune()
     SET_PRESCALER_PWM(55); // frequency of beep
     delayMillis(200); // duration of beep
     RELOAD_WATCHDOG_COUNTER();
-    signaltimeout = 0;
+    //signaltimeout = 0;
     comStep(5);
     SET_PRESCALER_PWM(40); // next beep is higher frequency
     delayMillis(200);
     RELOAD_WATCHDOG_COUNTER();
-    signaltimeout = 0;
+    //signaltimeout = 0;
 	comStep(6);
     SET_PRESCALER_PWM(25); // higher again..
     delayMillis(200);
@@ -123,6 +121,7 @@ void playStartupTune()
     SET_PRESCALER_PWM(0); // set prescaler back to 0.
 	signaltimeout = 0;
 	//}
+
     SET_AUTO_RELOAD_PWM(TIMER1_MAX_ARR);
 	__enable_irq();
 }
@@ -227,7 +226,7 @@ void playInputTune()
     SET_PRESCALER_PWM(70);
     delayMillis(100);
     RELOAD_WATCHDOG_COUNTER();
-    signaltimeout = 0;
+    //signaltimeout = 0;
     SET_PRESCALER_PWM(40);
     delayMillis(100);
     RELOAD_WATCHDOG_COUNTER();
