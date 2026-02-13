@@ -579,7 +579,7 @@
 #define PHASE_C_GPIO_PORT_LOW   GPIOA
 #define PHASE_C_GPIO_HIGH       GPIO_Pin_8
 #define PHASE_C_GPIO_PORT_HIGH  GPIOA
-
+#define DSHOT_PRIORITY_THRESHOLD 60
 #endif
 
 /*********************************** F051 Hardware Groups ****************************/

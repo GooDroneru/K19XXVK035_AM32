@@ -1953,73 +1953,64 @@ if(zero_crosses < 5){
                 NVIC_SystemReset();
             }
         }
-        if (tenkhzcounter > LOOP_FREQUENCY_HZ)
-        { // 1s sample interval 10000
-            consumed_current = (float)actual_current / 360 + consumed_current;
-            switch (dshot_extended_telemetry)
-            {
-            case 1:
-                send_extended_dshot = 0b0010 << 8 | degrees_celsius;
-                dshot_extended_telemetry = 2;
-                break;
-            case 2:
-                send_extended_dshot = 0b0110 << 8 | (uint8_t)actual_current / 50;
-                dshot_extended_telemetry = 3;
-                break;
-            case 3:
-                send_extended_dshot = 0b0100 << 8 | (uint8_t)(battery_voltage / 25);
-                dshot_extended_telemetry = 1;
-                break;
+#ifdef USE_CUSTOM_LED
+        if ((input >= 47) && (input < 1947)) {
+            if (ledcounter > (2000 >> forward)) {
+                GPIOB->BSRR = LL_GPIO_PIN_3;
+            } else {
+                GPIOB->BRR = LL_GPIO_PIN_3;
             }
+            if (ledcounter > (4000 >> forward)) {
+                ledcounter = 0;
+            }
+        }
+        if (input > 1947) {
+            GPIOB->BSRR = LL_GPIO_PIN_3;
+        }
+        if (input < 47) {
+            GPIOB->BRR = LL_GPIO_PIN_3;
+            }
+#endif
+
+        if (tenkhzcounter > LOOP_FREQUENCY_HZ) { // 1s sample interval 10000
+            consumed_current += (actual_current << 16) / 360;
             tenkhzcounter = 0;
         }
+
 #ifndef BRUSHED_MODE
-        if ((zero_crosses > 1000) || (adjusted_input == 0))
-        {
+
+        if ((zero_crosses > 1000) || (adjusted_input == 0)) {
 	 	 	bemf_timeout_happened = 0;
 	 	}
-        if (zero_crosses > 100 && adjusted_input < 200)
-        {
+        if (zero_crosses > 100 && adjusted_input < 200) {
 		 	bemf_timeout_happened = 0;
 		}
-        if (eepromBuffer.use_sine_start && adjusted_input < 160)
-        {
+        if (eepromBuffer.use_sine_start && adjusted_input < 160) {
 		 	bemf_timeout_happened = 0;
 		}
-        if (crawler_mode)
-        {
-            if (adjusted_input < 400)
-            {
+
+        if (crawler_mode) {
+            if (adjusted_input < 400) {
 	 	 		bemf_timeout_happened = 0;
 	 	 	}
-        }
-        else
-        {
-            if (adjusted_input < 150)
-            { // startup duty cycle should be low enough to not burn motor
+        } else {
+            if (adjusted_input < 150) { // startup duty cycle should be low enough to not burn motor
 	 	 			bemf_timeout = 100;
-            }
-            else
-            {
+            } else {
 	 	 	 		bemf_timeout = 10;
 	 	 	}
 	 	}
 #endif
-
         average_interval = e_com_time / 3;
-        if (desync_check && zero_crosses > 10)
-        {
-            if ((getAbsDif(last_average_interval, average_interval) > average_interval >> 1) && (average_interval < 2000))
-            { // throttle resitricted before zc 20.
+        if (desync_check && zero_crosses > 10) {
+            if ((getAbsDif(last_average_interval, average_interval) > average_interval >> 1) && (average_interval < 2000)) { // throttle resitricted before zc 20.
                 zero_crosses = 0;
                 desync_happened++;
-                if ((!eepromBuffer.bi_direction && (input > 47)) || commutation_interval > 1000)
-                {
+                if ((!eepromBuffer.bi_direction && (input > 47)) || commutation_interval > 1000) {
                     running = 0;
                 }
                 old_routine = 1;
-                if (zero_crosses > 100)
-                {
+                if (zero_crosses > 100) {
                     average_interval = 5000;
                 }
                     last_duty_cycle = min_startup_duty / 2;
@@ -2029,58 +2020,61 @@ if(zero_crosses < 5){
  	    last_average_interval = average_interval;
  	}
 
-    if(send_telemetry)
-    {
+// #if !defined(MCU_G031) && !defined(NEED_INPUT_READY)
+//         if (dshot_telemetry && (commutation_interval > DSHOT_PRIORITY_THRESHOLD)) {
+//              NVIC_SetPriority(IC_DMA_IRQ_NAME, 0);
+//              NVIC_SetPriority(COM_TIMER_IRQ, 1);
+//              NVIC_SetPriority(COMPARATOR_IRQ, 1);
+//          } else {
+//              NVIC_SetPriority(IC_DMA_IRQ_NAME, 1);
+//              NVIC_SetPriority(COM_TIMER_IRQ, 0);
+//              NVIC_SetPriority(COMPARATOR_IRQ, 0);
+//          }
+// #endif
+        if (send_telemetry) {
 #ifdef	USE_SERIAL_TELEMETRY
-        makeTelemPackage(degrees_celsius,
-                        battery_voltage,
-                        actual_current,
-                        (uint16_t)consumed_current,
-                        e_rpm);
-        send_telem_DMA();
+            makeTelemPackage(degrees_celsius, battery_voltage, actual_current,
+                (uint16_t)(consumed_current >> 16), e_rpm);
+            send_telem_DMA(10);
         send_telemetry = 0;
 #endif
+        } else if(send_esc_info_flag ) {
+           //makeInfoPacket();
+           //send_telem_DMA(49);
+           send_esc_info_flag = 0;
  	}
-    //adc_counter++;
-    if (0/*adc_counter > 200*/)
-    { // for adc and telemetry  
-        ADC_DMA_Callback();
-        ADC_SEQ_SwStartCmd();
-        degrees_celsius = getConvertedDegrees();
-        battery_voltage = (/*(7 * battery_voltage) + */((ADC_raw_volts * 3300 / 4095 * VOLTAGE_DIVIDER) / 100))/* >> 3*/;
-        if(!multirotor) {
-            smoothed_raw_current = getSmoothedCurrent();
-            actual_current = ((smoothed_raw_current * 3300 / 41) - (CURRENT_OFFSET * 100)) / (MILLIVOLT_PER_AMP);
+        if (PROCESS_ADC_FLAG == 1) { // for adc and telemetry set adc counter at 1khz loop rate
+            ADC_DMA_Callback();
+            ADC_SEQ_SwStartCmd();
+            degrees_celsius = getConvertedDegrees();
+            battery_voltage = (/*(7 * battery_voltage) + */((ADC_raw_volts * 3300 / 4095 * VOLTAGE_DIVIDER) / 100))/* >> 3*/;
+            if(!multirotor) {
+                smoothed_raw_current = getSmoothedCurrent();
+                actual_current = ((smoothed_raw_current * 3300 / 41) - (CURRENT_OFFSET * 100)) / (MILLIVOLT_PER_AMP);
+            }
+            if (actual_current < 0) {
+                actual_current = 0;
+            }             
+            if (eepromBuffer.low_voltage_cut_off == 1) {  
+                if (battery_voltage < (cell_count * low_cell_volt_cutoff)) {
+				  low_voltage_count++;
+                } else {
+                  if(!LOW_VOLTAGE_CUTOFF){  // if set low cutoff has happened, require power cycle to reset
+                    low_voltage_count = 0;
+                  }
+                }
+            }
+            if (eepromBuffer.low_voltage_cut_off == 2 ){   // absolute cut off
+              if (battery_voltage <  eepromBuffer.absolute_voltage_cutoff) {
+                low_voltage_count++;    
+                } else {
+                  if(!LOW_VOLTAGE_CUTOFF){
+                    low_voltage_count = 0;
+                  }
         }
-        // uint16_t seqDelay = ((PWM0->CMPA_bit.CMPA * 2) / 3) + 1;
-        // if(!eepromBuffer.variable_pwm) {
-        //     if(PWM0->TBCTL_bit.CLKDIV == PWM_TBCTL_CLKDIV_Div1) {
-        //         seqDelay /= 2;
-        //         seqDelay += 1;
-        //     }
-        //     else if(PWM0->TBCTL_bit.CLKDIV == PWM_TBCTL_CLKDIV_Div2) {
-                
-        //     }
-        //     else if(PWM0->TBCTL_bit.CLKDIV == PWM_TBCTL_CLKDIV_Div4) {
-        //         seqDelay *= 2;
-        //     }
-        //     ADC_SEQ_SetRestartTimer(ADC_SEQ_Num_0, seqDelay);
-        // }
-        // else {
-        //     seqDelay = (seqDelay * ((tim1_arr * 100) / TIM1_AUTORELOAD)) / 100;
-        //     ADC_SEQ_SetRestartTimer(ADC_SEQ_Num_0, seqDelay);
-        // }
-        if (actual_current < 0)
-        {
-            actual_current = 0;
         }
-        if (LOW_VOLTAGE_CUTOFF)
-        {
-            if (battery_voltage < (cell_count * low_cell_volt_cutoff))
-            {
-                low_voltage_count++;
-                if (low_voltage_count > (20000 - (stepper_sine * 900)))
-                {
+            if (low_voltage_count > (10000 - (stepper_sine * 9900))) {      // 10 second wait before cut-off for low voltage
+              LOW_VOLTAGE_CUTOFF = 1;
                     input = 0;
                     allOff();
                     maskPhaseInterrupts();
@@ -2088,13 +2082,8 @@ if(zero_crosses < 5){
                     zero_input_count = 0;
                     armed = 0;
                 }
-            }
-            else
-            {
-                low_voltage_count = 0;
-            }
-        }
-		//adc_counter = 0;
+           
+            PROCESS_ADC_FLAG = 0;
 #ifdef USE_ADC_INPUT
         if (ADC_raw_input < 10) {
             zero_input_count++;
@@ -2112,118 +2101,102 @@ if(zero_crosses < 5){
     }
 #endif
     stuckcounter = 0;
-    if (stepper_sine == 0)
-    {
+        if (stepper_sine == 0) {
+
         e_rpm = running * (600000 / e_com_time); // in tens of rpm
         k_erpm =  e_rpm / 10; // ecom time is time for one electrical revolution in microseconds
-        if (low_rpm_throttle_limit)
-        {                                   // some hardware doesn't need this, its on
+
+            if (low_rpm_throttle_limit) { // some hardware doesn't need this, its on
                                           // by default to keep hardware / motors
                                           // protected but can slow down the response
                                           // in the very low end a little.
-            duty_cycle_maximum = map(k_erpm, low_rpm_level, high_rpm_level, throttle_max_at_low_rpm, throttle_max_at_high_rpm); // for more performance lower the
+                duty_cycle_maximum = map(k_erpm, low_rpm_level, high_rpm_level, throttle_max_at_low_rpm,
+                    throttle_max_at_high_rpm); // for more performance lower the
                                                // high_rpm_level, set to a
                                                // consvervative number in source.
-        }
-        else
-        {
+            }else{
             duty_cycle_maximum = 2000;
         }
-        if (degrees_celsius > eepromBuffer.limits.temperature)
-        {
+
+            if (degrees_celsius > eepromBuffer.limits.temperature) {
             duty_cycle_maximum = map(degrees_celsius, eepromBuffer.limits.temperature - 10, eepromBuffer.limits.temperature + 10,
             throttle_max_at_high_rpm / 2, 1);
         }
-        if (zero_crosses < 100 && commutation_interval > 500)
-        {
+            if (zero_crosses < 100 && commutation_interval > 500) {
 		    filter_level = 12;
-	    }
-        else
-        {
+	} else {
             filter_level = map(average_interval, 100, 500, 3, 12);
 	    }
-        if (commutation_interval < 50)
-        {
+            if (commutation_interval < 50) {
 		    filter_level = 2;
 	    }
 
         if (eepromBuffer.auto_advance) {
             auto_advance_level = map(duty_cycle, 100, 2000, 13, 23);
         }
-/**************** old routine*********************/
-        if (old_routine && running)
-        {
+
+            /**************** old routine*********************/
+#ifdef CUSTOM_RAMP
+            if (old_routine && running) {
             maskPhaseInterrupts();
             getBemfState();
-            if (!zcfound)
-            {
-                if (rising)
-                {
-                    if (bemfcounter > min_bemf_counts_up)
-                    {
+                if (!zcfound) {
+                    if (rising) {
+                        if (bemfcounter > min_bemf_counts_up) {
                         zcfound = 1;
                         zcfoundroutine();
                     }
-                }
-                else
-                {
-                    if (bemfcounter > min_bemf_counts_down)
-                    {
+                    } else {
+                        if (bemfcounter > min_bemf_counts_down) {
                         zcfound = 1;
                         zcfoundroutine();
                     }
                 }
             }
         }
-        if (INTERVAL_TIMER_COUNT > 45000 && running == 1)
-        {
+#endif
+            if (INTERVAL_TIMER_COUNT > 45000 && running == 1) {
             bemf_timeout_happened++;
 
             maskPhaseInterrupts();
             old_routine = 1;
-            if (input < 48)
-            {
+                if (input < 48) {
                 running = 0;
                 commutation_interval = 5000;
             }
             zero_crosses = 0;
             zcfoundroutine();
         }
-        }
-        else
-        { // stepper sine
+        } else { // stepper sine
+
 #ifdef GIMBAL_MODE
             step_delay = 300;
             maskPhaseInterrupts();
             allpwm();
-            if (newinput > 1000)
-            {
+            if (newinput > 1000) {
 	 			desired_angle = map(newinput, 1000, 2000, 180, 360);
-            }else
-            {
+            } else {
 	 			desired_angle = map(newinput, 0, 1000, 0, 180);
 	 		}
-            if (current_angle > desired_angle)
-            {
+            if (current_angle > desired_angle) {
                 forward = 1;
                 advanceincrement();
                 delayMicros(step_delay);
                 current_angle--;
 	 		}
-            if (current_angle < desired_angle)
-            {
+            if (current_angle < desired_angle) {
                 forward = 0;
                 advanceincrement();
                 delayMicros(step_delay);
                 current_angle++;
             }
 #else
-            if (input > 48 && armed)
-            {
-                if (input > 48 && input < 137)
-                { // sine wave stepper
-                    if (do_once_sinemode)
-                    {
+
+            if (input > 48 && armed) {
+
+                if (input > 48 && input < 137) { // sine wave stepper
+
+                    if (do_once_sinemode) {
 				  // disable commutation interrupt in case set
                         DISABLE_COM_TIMER_INT();
 	   	 		        maskPhaseInterrupts();
@@ -2235,19 +2208,17 @@ if(zero_crosses < 5){
                     step_delay = map(input, 48, 120, 7000 / eepromBuffer.motor_poles, 810 / eepromBuffer.motor_poles);
 	 		        delayMicros(step_delay);
                     e_rpm = 600 / step_delay; // in hundreds so 33 e_rpm is 3300 actual erpm
-                }
-                else
-                {
+
+                } else {
                     do_once_sinemode = 1;
                     advanceincrement();
-                    if (input > 200)
-                    {
+                    if (input > 200) {
                         phase_A_position = 0;
                         step_delay = 80;
 	 			    }
+
 	 			    delayMicros(step_delay);
-                    if (phase_A_position == 0)
-                    {
+                    if (phase_A_position == 0) {
                         stepper_sine = 0;
                         running = 1;
                         old_routine = 1;
@@ -2259,37 +2230,48 @@ if(zero_crosses < 5){
                         prop_brake_active = 0;
                         step = changeover_step;
 		 		        // comStep(step);// rising bemf on a same as position 0.
-                        if (eepromBuffer.stall_protection)
-                        {
+                        if (eepromBuffer.stall_protection) {
                             last_duty_cycle = stall_protect_minimum_duty;
 				        }
                         commutate();
                         generatePwmTimerEvent();
                     }
 	 		    }
-            }
-            else
-            {
+
+            } else {
                 do_once_sinemode = 1;
-                if (eepromBuffer.brake_on_stop)
-                {
-                    duty_cycle = (TIMER1_MAX_ARR - 19) + eepromBuffer.drag_brake_strength * 2;
-                    adjusted_duty_cycle = TIMER1_MAX_ARR - ((duty_cycle * tim1_arr) / TIMER1_MAX_ARR) + 1;
+                if (eepromBuffer.brake_on_stop == 1) {
+#ifndef PWM_ENABLE_BRIDGE
+                    prop_brake_duty_cycle =  eepromBuffer.drag_brake_strength * 200;
+                    adjusted_duty_cycle =  tim1_arr - ((prop_brake_duty_cycle * tim1_arr) / 2000);
+                    if(adjusted_duty_cycle < 100){
+                      fullBrake();
+                    }else{
                     proportionalBrake();
                     SET_DUTY_CYCLE_ALL(adjusted_duty_cycle);
 	                prop_brake_active = 1;
-                }
-                else
-                {
+                    } 
+#else
+		// todo add braking for PWM /enable style bridges.
+#endif
+                } else if (eepromBuffer.brake_on_stop == 2){
+                  comStep(2);
+                  SET_DUTY_CYCLE_ALL(DEAD_TIME + ((eepromBuffer.active_brake_power * tim1_arr) / 2000)* 10);
+                }else{
                     SET_DUTY_CYCLE_ALL(0);
 	                allOff();
 	            }
                 e_rpm = 0;
             }
+
 #endif      // gimbal mode
 	    }  // stepper/sine mode end
+
 #ifdef BRUSHED_MODE
 		  runBrushedLoop();
+#endif
+#if DRONECAN_SUPPORT
+	DroneCAN_update();
 #endif
     }
 }
