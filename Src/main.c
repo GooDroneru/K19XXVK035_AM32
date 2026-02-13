@@ -1690,27 +1690,10 @@ extern const uint8_t __device_info_start[];
 extern const uint8_t __firmware_info_start[];
 #endif
 
-static void FPUInit()
+int main(void)
 {
-    SCB->CPACR = 0x00F00000;
-    __DSB();
-    __ISB();
-    for (uint8_t i = 0; i < 15; ++i)
-    {
-      __NOP();
-    }
-}
-
-int main()
-{
-    // RCU->HCLKCFG_bit.GPIOBEN = 1;
-    // RCU->HRSTCFG_bit.GPIOBEN = 1;
-    // GPIOB->DENSET |= 0x2000;
-    // GPIOB->OUTENSET |= 0x2000;
-
     SystemCoreClockUpdate( );
-    FPUInit();
-    initAfterJump();
+
 #ifdef BOOTLOADER
     hardwareVersion_t hardwareInfo;
     version_t __firmware_version;
@@ -1737,8 +1720,10 @@ int main()
     dead_time_override = deadTime;
     minimum_duty_cycle = deadTime;
     stall_protect_minimum_duty = deadTime;
-    
 #endif
+
+    initAfterJump();
+    //checkDeviceInfo();
     initCorePeripherals();
     enableCorePeripherals();
     loadEEpromSettings();
@@ -1751,57 +1736,21 @@ int main()
     PWM2->DBRED = dead_time_override;
     PWM2->DBFED = dead_time_override;
 
-    // for(uint8_t i = 0; i < 25; i++) {
-    //     if(i % 2 == 0) {
-    //         gcr[i] = 256;
-    //     }
-    //     else {
-    //         gcr[i] = 0;
-    //     }
-    //     gcr[25] = 0;
-    //     gcr[26] = 0;
-    //     gcr[27] = 0;
-    //     gcr[28] = 0;
-    //     gcr[29] = 0;
-    //     gcr[30] = 0;
-    // }
-
-    //     changeToOutput();
-    // while(1) { 
-
-    // }
-
-
-    asm("nop");
-    // if (VERSION_MAJOR != eepromBuffer.version.major || VERSION_MINOR != eepromBuffer.version.minor || eeprom_layout_version > eepromBuffer.eeprom_version)
-    // {
-    //     eepromBuffer.version.major = VERSION_MAJOR;
-    //     eepromBuffer.version.minor = VERSION_MINOR;
-    //     for (size_t i = 0; i < 12; i++)
-    //     {
-    //         strlen(FIRMWARE_NAME) > i ? eepromBuffer.firmware_name[i] = (uint8_t)FIRMWARE_NAME[i] : 0;
-	//     }
-	//   //saveEEpromSettings();
+    // if (eepromBuffer.use_sine_start) {
+        //    min_startup_duty = sin_mode_min_s_d;
     // }
     
-    if (eepromBuffer.dir_reversed == 1)
-    {
+    if (eepromBuffer.dir_reversed == 1) {
         forward = 0;
-    }
-    else
-    {
+    } else {
         forward = 1;
 	}
 	tim1_arr = TIMER1_MAX_ARR;
- //   startup_max_duty_cycle = startup_max_duty_cycle * TIMER1_MAX_ARR / 2000 + dead_time_override; // adjust for pwm frequency
- //   throttle_max_at_low_rpm = throttle_max_at_low_rpm * TIMER1_MAX_ARR / 2000; // adjust to new pwm frequency
- //   throttle_max_at_high_rpm = TIMER1_MAX_ARR; // adjust to new pwm frequency
-    if (!eepromBuffer.comp_pwm)
-    {
+    if (!eepromBuffer.comp_pwm) {
         eepromBuffer.use_sine_start = 0;  // sine start requires complementary pwm.
 	}
-    if (eepromBuffer.rc_car_reverse)
-    { // overrides a whole lot of things!
+
+    if (eepromBuffer.rc_car_reverse) { // overrides a whole lot of things!
 		throttle_max_at_low_rpm = 1000;
         eepromBuffer.bi_direction = 1;
         eepromBuffer.use_sine_start = 0;
@@ -1846,7 +1795,6 @@ int main()
         EDT_ARMED = 1;
         eepromBuffer.no_polling_start = 1;
 #endif
-
 #ifndef DEBUG_MODE
     zero_input_count = 0;
     MX_IWDG_Init();
@@ -1858,7 +1806,7 @@ int main()
 	MX_IWDG_Init();
 	LL_IWDG_ReloadCounter(IWDG);
 #else
-    #if defined(FIXED_DUTY_MODE) || defined(FIXED_SPEED_MODE)
+#if defined(FIXED_DUTY_MODE) || defined(FIXED_SPEED_MODE)
     MX_IWDG_Init();
     RELOAD_WATCHDOG_COUNTER();
     inputSet = 1;
@@ -1866,66 +1814,119 @@ int main()
     adjusted_input = 48;
     newinput = 48;
     comStep(2);
-        #ifdef FIXED_SPEED_MODE
+#ifdef FIXED_SPEED_MODE
     use_speed_control_loop = 1;
     eepromBuffer.use_sine_start = 0;
     target_e_com_time = 60000000 / FIXED_SPEED_MODE_RPM / (eepromBuffer.motor_poles / 2);
     input = 48;
-        #endif
+#endif
 
-    #else
-
-        #ifdef BRUSHED_MODE
+#else
+#ifdef BRUSHED_MODE
     // bi_direction = 1;
     commutation_interval = 5000;
     eepromBuffer.use_sine_start = 0;
     maskPhaseInterrupts();
     playBrushedStartupTune();
-        #else
+#else
+
     playStartupTune();
         #endif
+#endif
 
-
-        #ifdef GIMBAL_MODE
+#ifdef GIMBAL_MODE
             eepromBuffer.bi_direction = 1;
             eepromBuffer.use_sine_start = 1;
-        #endif
+#endif
 
-        #ifdef USE_ADC_INPUT
+#ifdef USE_ADC_INPUT
         armed_count_threshold = 5000;
         inputSet = 1;
 
-        #else
-
+#else
+    // checkForHighSignal();     // will reboot if signal line is high for 10ms
     receiveDshotDma();
-
-    if (drive_by_rpm)
-    {
+    if (drive_by_rpm) {
         use_speed_control_loop = 1;
     }
-        #endif
+#endif
 
-    #endif      // end fixed duty mode ifdef
-#endif     // end crsf input
+#endif      // end fixed duty mode ifdef
 
-    while (1)
-    {
-        // if (input_ready)
-        // {
-        //     processDshot();
-        //     input_ready = 0;
-        // }
+#ifdef MCU_F051
+ MCU_Id = DBGMCU->IDCODE &= 0xFFF;
+ REV_Id = DBGMCU->IDCODE >> 16;
+
+    if (REV_Id >= 4096) {
+	 temperature_offset = 0;
+    } else {
+	 temperature_offset = 230;
+ }
+
+#endif
+#ifdef NEUTRONRC_G071
+    setInputPullDown();
+#else
+    setInputPullUp();
+#endif
+
+#ifdef USE_STARTUP_BOOST
+  min_startup_duty = min_startup_duty + 200 + ((eepromBuffer.pwm_frequency * 100)/24);
+  minimum_duty_cycle = minimum_duty_cycle + 50 + ((eepromBuffer.pwm_frequency * 50 )/24);
+  startup_max_duty_cycle = startup_max_duty_cycle + 400;
+#endif
+
+    while (1) {
+e_com_time = ((commutation_intervals[0] + commutation_intervals[1] + commutation_intervals[2] + commutation_intervals[3] + commutation_intervals[4] + commutation_intervals[5]) + 4) >> 1; // COMMUTATION INTERVAL IS 0.5US INCREMENTS
+#if defined(FIXED_DUTY_MODE) || defined(FIXED_SPEED_MODE)
+        setInput();
+#endif
+
+#ifdef NEED_INPUT_READY
+ #ifdef MCU_F031
+    if (input_ready) {
+    setInput(); 
+    input_ready = 0;
+    }
+#else
+        //if (input_ready) {
+            //processDshot();
+            //input_ready = 0;
+        //}
+#endif
+#endif
+if(zero_crosses < 5){
+    if(eepromBuffer.bi_direction){
+     min_bemf_counts_up = TARGET_MIN_BEMF_COUNTS + 1;
+     min_bemf_counts_down = TARGET_MIN_BEMF_COUNTS + 1;
+   }else{
+     min_bemf_counts_up = TARGET_MIN_BEMF_COUNTS * 2;
+     min_bemf_counts_down = TARGET_MIN_BEMF_COUNTS * 2;
+   }
+}else{
+	  min_bemf_counts_up = TARGET_MIN_BEMF_COUNTS;
+	  min_bemf_counts_down = TARGET_MIN_BEMF_COUNTS;
+}
+
         RELOAD_WATCHDOG_COUNTER();
-        e_com_time = ((commutation_intervals[0] + commutation_intervals[1] + commutation_intervals[2] + commutation_intervals[3] + commutation_intervals[4] + commutation_intervals[5]) + 4) >> 1; // COMMUTATION INTERVAL IS 0.5US INCREMENTS
-        if (eepromBuffer.variable_pwm)
-        {
-		    tim1_arr = map(commutation_interval, 96, 200, TIMER1_MAX_ARR / 2, TIMER1_MAX_ARR);
-     	//pwm_frequency_conversion_factor = (tim1_arr << 10) / TIMER1_MAX_ARR; // multply by 1024
+
+        if (eepromBuffer.variable_pwm == 1) {      // uses range defined by pwm frequency setting
+            tim1_arr = map(commutation_interval, 96, 200, TIMER1_MAX_ARR / 2,
+                TIMER1_MAX_ARR);
         }
-        if (signaltimeout > (LOOP_FREQUENCY_HZ >> 1))
-        { // half second timeout when armed;
-            if (armed)
-            {
+        if (eepromBuffer.variable_pwm == 2) {      // uses automatic range   
+          if(average_interval < 250 && average_interval > 100){
+            tim1_arr = average_interval * (CPU_FREQUENCY_MHZ/9);
+          }
+          if(average_interval < 100 && average_interval > 0){
+            tim1_arr = 100 * (CPU_FREQUENCY_MHZ/9);
+         }
+          if((average_interval >= 250) || (average_interval == 0)){
+              tim1_arr = 250 * (CPU_FREQUENCY_MHZ/9);
+          } 
+        }
+        if (signaltimeout > (LOOP_FREQUENCY_HZ >> 1)) { // half second timeout when armed;
+            if (armed) {
                 allOff();
                 armed = 0;
                 input = 0;
@@ -1933,16 +1934,12 @@ int main()
                 zero_input_count = 0;
                 SET_DUTY_CYCLE_ALL(0);
                 resetInputCaptureTimer();
-                for (int i = 0; i < 64; i++)
-                {
+                for (int i = 0; i < 64; i++) {
                     dma_buffer[i] = 0;
                 }
-#ifndef DEBUG_MODE
                 NVIC_SystemReset();
-#endif
             }
-            if (signaltimeout > LOOP_FREQUENCY_HZ << 1)
-            { // 2 second when not armed
+            if (signaltimeout > LOOP_FREQUENCY_HZ << 1) { // 2 second when not armed
                 allOff();
                 armed = 0;
                 input = 0;
@@ -1950,13 +1947,10 @@ int main()
                 zero_input_count = 0;
                 SET_DUTY_CYCLE_ALL(0);
                 resetInputCaptureTimer();
-                for (int i = 0; i < 64; i++)
-                {
+                for (int i = 0; i < 64; i++) {
                     dma_buffer[i] = 0;
                 }
-#ifndef DEBUG_MODE
                 NVIC_SystemReset();
-#endif
             }
         }
         if (tenkhzcounter > LOOP_FREQUENCY_HZ)
@@ -2299,4 +2293,5 @@ int main()
 #endif
     }
 }
+
 
