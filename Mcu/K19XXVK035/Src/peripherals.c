@@ -8,7 +8,6 @@
 
 extern uint16_t counter;
 extern uint16_t deadTime;
-extern uint8_t commFreq;
 extern uint8_t buffersize;
 
 void initCorePeripherals(void)
@@ -47,21 +46,9 @@ void setAutoReloadPWM(uint16_t relval)
 
 void setPrescalerPWM(uint16_t presc){
   if(presc == 0) {  
-    if(commFreq == PWM12) {
-      PWM0->TBCTL_bit.CLKDIV = PWM_TBCTL_CLKDIV_Div4;        //12 KHz
-      PWM1->TBCTL_bit.CLKDIV = PWM_TBCTL_CLKDIV_Div4;        //12 KHz
-      PWM2->TBCTL_bit.CLKDIV = PWM_TBCTL_CLKDIV_Div4;        //12 KHz
-    }
-    else if(commFreq == PWM48) {
-      PWM0->TBCTL_bit.CLKDIV = PWM_TBCTL_CLKDIV_Div4;        //12 KHz
-      PWM1->TBCTL_bit.CLKDIV = PWM_TBCTL_CLKDIV_Div4;        //12 KHz
-      PWM2->TBCTL_bit.CLKDIV = PWM_TBCTL_CLKDIV_Div4;        //12 KHz
-    }
-    else {
-      PWM0->TBCTL_bit.CLKDIV = PWM_TBCTL_CLKDIV_Div2;        //12 KHz
-      PWM1->TBCTL_bit.CLKDIV = PWM_TBCTL_CLKDIV_Div2;        //12 KHz
-      PWM2->TBCTL_bit.CLKDIV = PWM_TBCTL_CLKDIV_Div2;        //12 KHz
-    }
+    PWM0->TBCTL_bit.CLKDIV = PWM_TBCTL_CLKDIV_Div2;        //12 KHz
+    PWM1->TBCTL_bit.CLKDIV = PWM_TBCTL_CLKDIV_Div2;        //12 KHz
+    PWM2->TBCTL_bit.CLKDIV = PWM_TBCTL_CLKDIV_Div2;        //12 KHz
     PWM0->TBCTL_bit.HSPCLKDIV = PWM_TBCTL_HSPCLKDIV_Div1; //48 KHz
     PWM1->TBCTL_bit.HSPCLKDIV = PWM_TBCTL_HSPCLKDIV_Div1; //48 KHz
     PWM2->TBCTL_bit.HSPCLKDIV = PWM_TBCTL_HSPCLKDIV_Div1; //48 KHz
