@@ -600,108 +600,143 @@ void loadEEpromSettings()
 {
 
     read_flash_bin(eepromBuffer.buffer, eeprom_address, sizeof(eepromBuffer.buffer));
-    if (eepromBuffer.advance_level > 3)
-    {
-        eepromBuffer.advance_level = 2;
+    //if(eepromBuffer.eeprom_version < EEPROM_VERSION){
+      eepromBuffer.max_ramp = 160;    // 0.1% per ms to 25% per ms 
+      eepromBuffer.minimum_duty_cycle = 0; // 0.2% to 51 percent
+      eepromBuffer.disable_stick_calibration = 0; // 
+      eepromBuffer.absolute_voltage_cutoff = 10;  // voltage level 1 to 100 in 0.5v increments
+      eepromBuffer.current_P = 100; // 0-255
+      eepromBuffer.current_I = 0; // 0-255
+      eepromBuffer.current_D = 100; // 0-255
+      eepromBuffer.active_brake_power = 0; // 1-5 percent duty cycle
+      eepromBuffer.reserved_eeprom_3[0] = 0; //14-16  for crsf input
+      eepromBuffer.reserved_eeprom_3[1] = 0;
+      eepromBuffer.reserved_eeprom_3[2] = 0;
+      eepromBuffer.reserved_eeprom_3[3] = 0;
+    //}
+    //eepromBuffer.motor_poles = 14; //TODO
+    // eepromBuffer.advance_level can either be set to 0-3 with config tools less than 1.90 or 10-42 with 1.90 or above 
+    if (eepromBuffer.advance_level > 42 || (eepromBuffer.advance_level < 10 && eepromBuffer.advance_level > 3)){
+        temp_advance = 16;
+        }
+    if (eepromBuffer.advance_level < 4) {         // old format needs to be converted to 0-32 range
+        temp_advance = (eepromBuffer.advance_level<<3);
+        eepromBuffer.advance_level = temp_advance + 10;
+        }
+    if (eepromBuffer.advance_level < 43 && eepromBuffer.advance_level > 9 ) { // new format subtract 10 from advance
+        temp_advance = eepromBuffer.advance_level - 10;
     }
-    if ((eepromBuffer.version.major == 0) && (eepromBuffer.version.minor >= 2) && (!eepromBuffer.variable_pwm))
-    {
+
+    if (eepromBuffer.pwm_frequency < 145 && eepromBuffer.pwm_frequency > 7) {
+      int divider = eepromBuffer.pwm_frequency * 100 / 6;
+      TIMER1_MAX_ARR =   TIM1_AUTORELOAD * 400 / divider;
         SET_AUTO_RELOAD_PWM(TIMER1_MAX_ARR);
-     //   throttle_max_at_high_rpm = TIMER1_MAX_ARR;
-     //   duty_cycle_maximum = TIMER1_MAX_ARR;
-    }
+    } else {
     tim1_arr = TIM1_AUTORELOAD;
     SET_AUTO_RELOAD_PWM(tim1_arr);
-    if (eepromBuffer.startup_power < 151 && eepromBuffer.startup_power > 49)
-    {
-        min_startup_duty = (eepromBuffer.startup_power);
-        minimum_duty_cycle = (eepromBuffer.startup_power / 3);
-        stall_protect_minimum_duty = minimum_duty_cycle + 10;
     }
-    else
-    {
-        min_startup_duty = 150;
-        minimum_duty_cycle = (min_startup_duty / 2) + 10;
+    if(eepromBuffer.minimum_duty_cycle < 51 && eepromBuffer.minimum_duty_cycle > 0){
+    minimum_duty_cycle = eepromBuffer.minimum_duty_cycle * 10;
+    }else{
+    minimum_duty_cycle = 0;
     }
+    if (eepromBuffer.startup_power < 151 && eepromBuffer.startup_power > 49) {
+            min_startup_duty = minimum_duty_cycle + eepromBuffer.startup_power;
+    } else {
+        min_startup_duty = minimum_duty_cycle;
+    }
+    startup_max_duty_cycle = minimum_duty_cycle + 400;  
+
     motor_kv = (eepromBuffer.motor_kv * 40) + 20;
-    //motor_kv = 1500;
 #ifdef THREE_CELL_MAX
 		motor_kv =  motor_kv / 2;
 #endif
-    if (eepromBuffer.eeprom_version > 0)
-    { // these commands weren't introduced until eeprom version 1.
+#ifdef ONE_TWO_CELL_MAX
+		motor_kv =  motor_kv / 16;
+#endif
+    setVolume(2);
+    if (eepromBuffer.eeprom_version > 0) { // these commands weren't introduced until eeprom version 1.
 #ifdef CUSTOM_RAMP
 
 #else
-        if (eepromBuffer.beep_volume > 11)
-        {
+        if (eepromBuffer.beep_volume > 11) {
             setVolume(5);
-        } 
-        else
-        {
+        } else {
             setVolume(eepromBuffer.beep_volume);
         }
 #endif
-        
         servo_low_threshold = (eepromBuffer.servo.low_threshold * 2) + 750; // anything below this point considered 0
         servo_high_threshold = (eepromBuffer.servo.high_threshold * 2) + 1750; // anything above this point considered 2000 (max)
         servo_neutral = (eepromBuffer.servo.neutral) + 1374;
         servo_dead_band = eepromBuffer.servo.dead_band;
-        if (eepromBuffer.low_voltage_cut_off == 0x01)
-        {
-            LOW_VOLTAGE_CUTOFF = 1;
-        } 
-        else
-        {
-            LOW_VOLTAGE_CUTOFF = 0;
-        }
-        low_cell_volt_cutoff = eepromBuffer.low_cell_volt_cutoff + 250; // 2.5 to 3.5 volts per cell range
 
+        low_cell_volt_cutoff = eepromBuffer.low_cell_volt_cutoff + 250; // 2.5 to 3.5 volts per cell range
+        
+        
 #ifndef HAS_HALL_SENSORS
         eepromBuffer.use_hall_sensors = 0;
 #endif
 
-        if (eepromBuffer.sine_mode_changeover_thottle_level < 5 || eepromBuffer.sine_mode_changeover_thottle_level > 25)
-        { // sine mode changeover 5-25 percent throttle
+        if (eepromBuffer.sine_mode_changeover_thottle_level < 5 || eepromBuffer.sine_mode_changeover_thottle_level > 25) { // sine mode changeover 5-25 percent throttle
             eepromBuffer.sine_mode_changeover_thottle_level = 5;
         }
-        if (eepromBuffer.drag_brake_strength == 0 || eepromBuffer.drag_brake_strength > 10)
-        { // drag brake 1-10
+        if (eepromBuffer.drag_brake_strength == 0 || eepromBuffer.drag_brake_strength > 10) { // drag brake 1-10
             eepromBuffer.drag_brake_strength = 10;
         }
-        if (eepromBuffer.driving_brake_strength == 0 || eepromBuffer.driving_brake_strength > 9)
-        { // motor brake 1-9
+
+        if (eepromBuffer.driving_brake_strength == 0 || eepromBuffer.driving_brake_strength > 9) { // motor brake 1-9
             eepromBuffer.driving_brake_strength = 10;
         }
+
+        if(eepromBuffer.driving_brake_strength < 10){
         dead_time_override = deadTime + (150 - (eepromBuffer.driving_brake_strength * 10));
-        if (dead_time_override > 200)
-        {
+            if (dead_time_override > 200) {
             dead_time_override = 200;
         }
-
-        min_startup_duty = eepromBuffer.startup_power + dead_time_override;
-        minimum_duty_cycle = eepromBuffer.startup_power / 2 + dead_time_override;
+        min_startup_duty = min_startup_duty + dead_time_override;
+        minimum_duty_cycle = minimum_duty_cycle + dead_time_override;
         throttle_max_at_low_rpm = throttle_max_at_low_rpm + dead_time_override;
         startup_max_duty_cycle = startup_max_duty_cycle + dead_time_override;
-
-        if (eepromBuffer.limits.temperature < 70 || eepromBuffer.limits.temperature > 140)
-        {
+#ifdef STMICRO
+            TIM1->BDTR |= dead_time_override;
+#endif
+#ifdef ARTERY
+            TMR1->brk |= dead_time_override;
+#endif
+#ifdef GIGADEVICES
+            TIMER_CCHP(TIMER0) |= dead_time_override;
+#endif
+#ifdef WCH
+            TIM1->BDTR |= dead_time_override;
+#endif
+#ifdef MCU_K19xxVK035
+    PWM0->DBRED = dead_time_override;
+    PWM0->DBFED = dead_time_override;
+    PWM1->DBRED = dead_time_override;
+    PWM1->DBFED = dead_time_override;
+    PWM2->DBRED = dead_time_override;
+    PWM2->DBFED = dead_time_override;
+#endif
+        }
+        if (eepromBuffer.limits.temperature < 70 || eepromBuffer.limits.temperature > 140) {
             eepromBuffer.limits.temperature = 255;
         }
-        if (eepromBuffer.limits.current > 0 && eepromBuffer.limits.current < 100)
-        {
+
+        if (eepromBuffer.limits.current > 0 && eepromBuffer.limits.current < 100) {
             use_current_limit = 1;
         }
-        use_current_limit = 0;
-        if (eepromBuffer.sine_mode_power == 0 || eepromBuffer.sine_mode_power > 10)
-        {
+        
+        currentPid.Kp = eepromBuffer.current_P*2;
+        currentPid.Ki = eepromBuffer.current_I;
+        currentPid.Kd = eepromBuffer.current_D*2;
+        
+        if (eepromBuffer.sine_mode_power == 0 || eepromBuffer.sine_mode_power > 10) {
             eepromBuffer.sine_mode_power = 5;
         }
+
         // unsinged int cant be less than 0
-        if (eepromBuffer.input_type < 10)
-        {
-            switch (eepromBuffer.input_type)
-            {
+        if (eepromBuffer.input_type < 10) {
+            switch (eepromBuffer.input_type) {
             case AUTO_IN:
                 dshot = 0;
                 servoPwm = 0;
@@ -722,23 +757,42 @@ void loadEEpromSettings()
                 dshot = 1;
                 break;
             };
-        }
-        else
-        {
+        } else {
             dshot = 0;
             servoPwm = 0;
             EDT_ARMED = 1;
         }
-        if (motor_kv < 300)
-        {
+        
+        if(eepromBuffer.max_ramp < 10){
+          ramp_divider = 9;
+          max_ramp_startup = eepromBuffer.max_ramp;
+          max_ramp_low_rpm = eepromBuffer.max_ramp;
+          max_ramp_high_rpm = eepromBuffer.max_ramp;
+        }else{
+          ramp_divider = 0;
+          if((eepromBuffer.max_ramp / 10) < max_ramp_startup){
+            max_ramp_startup = eepromBuffer.max_ramp / 10;
+          }
+          if((eepromBuffer.max_ramp / 10) < max_ramp_low_rpm){
+            max_ramp_low_rpm = eepromBuffer.max_ramp / 10;
+          }
+          if((eepromBuffer.max_ramp / 10) < max_ramp_high_rpm){
+            max_ramp_high_rpm = eepromBuffer.max_ramp / 10;
+          }
+        }
+        
+        if (motor_kv < 300) {
             low_rpm_throttle_limit = 0;
         }
-
         low_rpm_level = motor_kv / 100 / (32 / eepromBuffer.motor_poles);
         high_rpm_level = motor_kv / 12 / (32 / eepromBuffer.motor_poles);				
     }
     reverse_speed_threshold = map(motor_kv, 300, 3000, 1000, 500);
-    //eepromBuffer.auto_advance = 1;
+    if (eepromBuffer.bi_direction){
+      polling_mode_changeover = POLLING_MODE_THRESHOLD / 2;
+    }else{
+      polling_mode_changeover = POLLING_MODE_THRESHOLD;
+    }
 }
 
 void saveEEpromSettings()
@@ -1361,15 +1415,15 @@ __RAMFUNC void tenKhzRoutine()
             }
         }
     }
-    if (eepromBuffer.telementry_on_interval)
-    {
-        telem_ms_count++;
-        if (telem_ms_count > telemetry_interval_ms * 20)
-        {
-            send_telemetry = 1;
-            telem_ms_count = 0;
-        }
-	}
+    // if (eepromBuffer.telementry_on_interval)
+    // {
+    //     telem_ms_count++;
+    //     if (telem_ms_count > telemetry_interval_ms * 20)
+    //     {
+    //         send_telemetry = 1;
+    //         telem_ms_count = 0;
+    //     }
+	// }
 #ifndef BRUSHED_MODE
 		    if (!stepper_sine)
             {

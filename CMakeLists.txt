@@ -63,17 +63,17 @@ target_sources(SOURCES
         Src/sounds.c
 
         Inc/common.h
-        Inc/crsf.h
         Inc/dshot.h
         Inc/firmwareversion.h
         Inc/functions.h
         Inc/signal.h
         Inc/sounds.h
         Inc/targets.h
+        Inc/eeprom.h
 
         Mcu/K19XXVK035/Inc/ADC.h
         Mcu/K19XXVK035/Inc/comparator.h
-        Mcu/K19XXVK035/Inc/eeprom.h
+        #Mcu/K19XXVK035/Inc/eeprom.h
         Mcu/K19XXVK035/Inc/IO.h
         Mcu/K19XXVK035/Inc/main.h
         Mcu/K19XXVK035/Inc/peripherals.h

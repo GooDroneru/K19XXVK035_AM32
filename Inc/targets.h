@@ -1401,3 +1401,7 @@
 	#define VOLTAGE_ADC_PIN LL_GPIO_PIN_6
 #endif
 #endif
+
+#ifndef POLLING_MODE_THRESHOLD
+#define POLLING_MODE_THRESHOLD 2000
+#endif
