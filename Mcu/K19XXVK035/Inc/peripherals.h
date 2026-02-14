@@ -11,12 +11,24 @@
 #include "main.h"
 #include "ADC.h"
 
-enum commutationFrequency {
-    PWM12 = 12,
-    PWM24 = 24,
-    PWM48 = 48,
-    PWM24TO48 = 0
-};
+#define INTERVAL_TIMER_COUNT (getintervaTimerCount())
+#define RELOAD_WATCHDOG_COUNTER() (WDT_ITStatusClear())
+#define DISABLE_COM_TIMER_INT() (COM_TIMER->CTRL_bit.INTEN = 0)
+#define ENABLE_COM_TIMER_INT() (COM_TIMER->CTRL_bit.INTEN = 1)
+#define SET_AND_ENABLE_COM_INT(time) (setAndEnableComInt(time))
+#define SET_INTERVAL_TIMER_COUNT(intertime) (setintervaTimerCount(intertime))
+#define SET_PRESCALER_PWM(presc) (setPrescalerPWM(presc))
+#define SET_AUTO_RELOAD_PWM(relval)             \
+            (PWM0->TBPRD = relval,              \
+            PWM1->TBPRD = relval,               \
+            PWM2->TBPRD = relval)
+#define SET_DUTY_CYCLE_ALL(newdc)               \
+            (PWM0->CMPA_bit.CMPA = newdc,       \
+            PWM0->CMPB_bit.CMPB = newdc,        \
+            PWM1->CMPA_bit.CMPA = newdc,        \
+            PWM1->CMPB_bit.CMPB = newdc,        \
+            PWM2->CMPA_bit.CMPA = newdc,        \
+            PWM2->CMPB_bit.CMPB =  newdc)
 
 void initAfterJump(void);
 void initCorePeripherals(void);
@@ -53,25 +65,6 @@ void updateDma();
 void reverseBuffer();
 void updateDmaTransmit();
 void setDmaCnt(uint8_t size);
-
-#define INTERVAL_TIMER_COUNT (getintervaTimerCount())
-#define RELOAD_WATCHDOG_COUNTER() (WDT_ITStatusClear())
-#define DISABLE_COM_TIMER_INT() (COM_TIMER->CTRL_bit.INTEN = 0)
-#define ENABLE_COM_TIMER_INT() (COM_TIMER->CTRL_bit.INTEN = 1)
-#define SET_AND_ENABLE_COM_INT(time) (setAndEnableComInt(time))
-#define SET_INTERVAL_TIMER_COUNT(intertime) (setintervaTimerCount(intertime))
-#define SET_PRESCALER_PWM(presc) (setPrescalerPWM(presc))
-#define SET_AUTO_RELOAD_PWM(relval)             \
-            (PWM0->TBPRD = relval,              \
-            PWM1->TBPRD = relval,               \
-            PWM2->TBPRD = relval)
-#define SET_DUTY_CYCLE_ALL(newdc)               \
-            (PWM0->CMPA_bit.CMPA = newdc,       \
-            PWM0->CMPB_bit.CMPB = newdc,        \
-            PWM1->CMPA_bit.CMPA = newdc,        \
-            PWM1->CMPB_bit.CMPB = newdc,        \
-            PWM2->CMPA_bit.CMPA = newdc,        \
-            PWM2->CMPB_bit.CMPB =  newdc)
 
 #endif /* PERIPHERALS_H_ */
 

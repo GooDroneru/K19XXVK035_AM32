@@ -5,7 +5,7 @@
  *      Author: Alka
  */
 
-#include <Mcu/K19XXVK035/Inc/main.h>
+#include "main.h"
 
 #ifndef INC_DSHOT_H_
 #define INC_DSHOT_H_

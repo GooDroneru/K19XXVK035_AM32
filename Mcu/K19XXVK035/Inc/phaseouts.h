@@ -9,7 +9,6 @@
 #define INC_PHASEOUTS_H_
 
 #include "main.h"
-#include "common.h"
 
 void allOff();
 void comStep(int newStep);

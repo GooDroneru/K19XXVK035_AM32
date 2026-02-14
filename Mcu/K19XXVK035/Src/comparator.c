@@ -3,10 +3,29 @@
  *
  *  Created on: Sep. 26, 2020
  *      Author: Alka
+ *      Modified by TempersLee June 21, 2024
  */
 
 #include "comparator.h"
+
 #include "targets.h"
+
+uint8_t getCompOutputLevel(){
+    if (step == 1 || step == 4)
+    {   // c floating
+        return SET == GPIO_ReadBit(COMPARATOR_REGISTER, PHASE_C_COMP_PIN);
+    }
+    if (step == 2 || step == 5)
+    {   // a floating
+        return SET == GPIO_ReadBit(COMPARATOR_REGISTER, PHASE_A_COMP_PIN);
+    }
+    if (step == 3 || step == 6)
+    {   // b floating
+        return SET == GPIO_ReadBit(COMPARATOR_REGISTER, PHASE_B_COMP_PIN);
+    }
+    return 0;
+}
+
 
 void maskPhaseInterrupts()
 {
@@ -67,23 +86,3 @@ void changeCompInput()
         COMPARATOR_REGISTER->INTPOLSET_bit.PHASE_C_COMP = 1; 
     }
 }
-
-uint8_t getCompOutputLevel(){
-    if (step == 1 || step == 4)
-    {   // c floating
-        return SET == GPIO_ReadBit(COMPARATOR_REGISTER, PHASE_C_COMP_PIN);
-    }
-    if (step == 2 || step == 5)
-    {   // a floating
-        return SET == GPIO_ReadBit(COMPARATOR_REGISTER, PHASE_A_COMP_PIN);
-    }
-    if (step == 3 || step == 6)
-    {   // b floating
-        return SET == GPIO_ReadBit(COMPARATOR_REGISTER, PHASE_B_COMP_PIN);
-    }
-    return 0;
-}
-
-
-
-

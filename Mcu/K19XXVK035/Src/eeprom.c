@@ -33,14 +33,12 @@ void read_flash_bin(uint8_t* data , uint32_t add , int out_buff_len)
 {
     uint32_t rawData[2] = {0};
     uint32_t j = 0;
-
     for(uint32_t i = 0; i < out_buff_len; i += 8) {
         MFLASH_ReadData(add + (j * 8), rawData, MFLASH_Region_Main);
         data[i] = (uint8_t)rawData[0];
         data[i + 1] = (uint8_t)(rawData[0]>>8);
         data[i + 2] = (uint8_t)(rawData[0]>>16);
         data[i + 3] = (uint8_t)(rawData[0]>>24);
-
         data[i + 4] = (uint8_t)rawData[1];
         data[i + 5] = (uint8_t)(rawData[1]>>8);
         data[i + 6] = (uint8_t)(rawData[1]>>16);

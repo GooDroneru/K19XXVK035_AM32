@@ -5,7 +5,7 @@
  *      Author: Alka
  */
 
-#include <Mcu/K19XXVK035/Inc/main.h>
+#include "main.h"
 
 extern char out_put;
 extern char inputSet;

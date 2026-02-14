@@ -3,11 +3,14 @@
  *
  *  Created on: Apr 22, 2020
  *      Author: Alka
+ *      Modified by TempersLee June,21 2024
  */
 #include "phaseouts.h"
-#include "targets.h"
 
-extern char comp_pwm;
+#include "functions.h"
+#include "targets.h"
+#include "common.h"
+
 extern char prop_brake_active;
 
 #define PHASE_C_HIGH PIN8

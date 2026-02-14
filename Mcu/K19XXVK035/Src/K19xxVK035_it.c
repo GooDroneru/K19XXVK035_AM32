@@ -24,7 +24,6 @@ extern char inputSet;
 extern char running;
 extern uint16_t ADCDataDMA[3];
 extern uint32_t dma_buffer[64];
-volatile uint16_t counter = 0;
 extern uint8_t buffersize;
 char input_ready = 0;
 extern uint32_t gcr[37];

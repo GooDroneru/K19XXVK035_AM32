@@ -61,6 +61,7 @@ target_sources(SOURCES
         Src/functions.c
         Src/signal.c
         Src/sounds.c
+        Src/kiss_telemetry.c
 
         Inc/common.h
         Inc/dshot.h

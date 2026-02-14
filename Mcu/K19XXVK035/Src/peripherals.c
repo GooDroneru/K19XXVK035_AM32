@@ -1,14 +1,20 @@
 /*
  * peripherals.c
  *
- * */
-#include "peripherals.h"
-#include "targets.h"
-#include "serial_telemetry.h"
+ *  Created on: Sep. 26, 2020
+ *      Author: Alka
+ *
+ *      Modified By TempersLee June 21, 2024
+ */
 
-extern uint16_t counter;
-extern uint16_t deadTime;
-extern uint8_t buffersize;
+// PERIPHERAL SETUP
+#include "peripherals.h"
+
+#include "ADC.h"
+#include "common.h"
+#include "functions.h"
+#include "serial_telemetry.h"
+#include "targets.h"
 
 void initCorePeripherals(void)
 {
@@ -162,7 +168,6 @@ void resetInputCaptureTimer()
   IC_TIMER_REGISTER->ECCTL0_bit.CAPLDEN = 0;
   IC_TIMER_REGISTER->TSCTR = 0;
   IC_TIMER_REGISTER->ECCTL1_bit.REARM = 1;
-  counter = 0;
   IC_TIMER_REGISTER->ECCTL0_bit.CAPLDEN = 1;
 }
 
@@ -254,16 +259,16 @@ void PWM_TIM1_Init(void)  //PWM
     PWM2->AQCTLA_bit.CAU = PWM_AQCTLA_CAU_Clear;
     PWM2->AQCTLB_bit.PRD = PWM_AQCTLB_PRD_Clear;
     PWM2->AQCTLB_bit.CBU = PWM_AQCTLB_CBU_Set;
-    PWM0->DBRED = deadTime;
-    PWM0->DBFED = deadTime;
+    PWM0->DBRED = DEAD_TIME;
+    PWM0->DBFED = DEAD_TIME;
     PWM0->DBCTL_bit.OUTMODE = 0x03;
     PWM0->DBCTL_bit.POLSEL = 0x02;
-    PWM1->DBRED = deadTime;
-    PWM1->DBFED = deadTime;
+    PWM1->DBRED = DEAD_TIME;
+    PWM1->DBFED = DEAD_TIME;
     PWM1->DBCTL_bit.OUTMODE = 0x03;
     PWM1->DBCTL_bit.POLSEL = 0x02;
-    PWM2->DBRED = deadTime;
-    PWM2->DBFED = deadTime;
+    PWM2->DBRED = DEAD_TIME;
+    PWM2->DBFED = DEAD_TIME;
     PWM2->DBCTL_bit.OUTMODE = 0x03;
     PWM2->DBCTL_bit.POLSEL = 0x02;
     PWM0->DBCTL_bit.INMODE =  0;

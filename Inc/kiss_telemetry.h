@@ -1,4 +1,4 @@
-#include <Mcu/K19XXVK035/Inc/main.h>
+#include "main.h"
 
 #ifndef KISS_TELEMETRY_H_
 #define KISS_TELEMETRY_H_
