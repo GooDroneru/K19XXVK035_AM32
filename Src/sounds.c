@@ -5,12 +5,12 @@
  *      Author: Alka
  */
 
-#include <Mcu/K19XXVK035/Inc/peripherals.h>
-#include <Mcu/K19XXVK035/Inc/phaseouts.h>
 #include "sounds.h"
 #include "common.h"
 #include "eeprom.h"
 #include "functions.h"
+#include "peripherals.h"
+#include "phaseouts.h"
 #include "targets.h"
 
 uint8_t beep_volume;
