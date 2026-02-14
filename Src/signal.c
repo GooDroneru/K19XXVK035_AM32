@@ -88,25 +88,19 @@ __RAMFUNC void computeServoInput()
 				}
 			}
 			signaltimeout = 0;
+        } else {
+            if (eepromBuffer.bi_direction) {
+                if (diffValue <= servo_neutral) {
+                    servorawinput = map((diffValue),
+                        servo_low_threshold, servo_neutral, 0, 1000);
+                } else {
+                    servorawinput = map((diffValue), servo_neutral + 1,
+                        servo_high_threshold, 1001, 2000);
         }
-        else
-        {
-            if (eepromBuffer.bi_direction)
-            {
-                if (diffValue <= servo_neutral)
-                {
-                    servorawinput = map(diffValue, servo_low_threshold, servo_neutral, 0, 1000);
-                }
-                else
-                {
-                    servorawinput = map(diffValue, servo_neutral + 1, servo_high_threshold, 1001, 2000);
-				}
-            }
-            else
-            {
-                servorawinput = map(diffValue, servo_low_threshold, servo_high_threshold, 47, 2047);
-                if (servorawinput <= 48)
-                {
+            } else {
+                servorawinput = map((diffValue), servo_low_threshold,
+                    servo_high_threshold, 47, 2047);
+                if (servorawinput <= 48) {
 				    servorawinput = 0;
 			    }
 			}
