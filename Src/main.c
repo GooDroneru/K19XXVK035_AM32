@@ -2046,7 +2046,7 @@ if(zero_crosses < 5){
         if (PROCESS_ADC_FLAG == 1) { // for adc and telemetry set adc counter at 1khz loop rate
             ADC_DMA_Callback();
             ADC_SEQ_SwStartCmd();
-            degrees_celsius = getConvertedDegrees();
+            degrees_celsius = getConvertedDegrees(0);
             battery_voltage = (/*(7 * battery_voltage) + */((ADC_raw_volts * 3300 / 4095 * VOLTAGE_DIVIDER) / 100))/* >> 3*/;
             if(!multirotor) {
                 smoothed_raw_current = getSmoothedCurrent();

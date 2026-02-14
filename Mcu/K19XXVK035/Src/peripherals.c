@@ -189,8 +189,6 @@ void enableCorePeripherals(){
 
 #ifdef USE_ADC
     ADCInit();
-    enableADC_DMA();
-    activateADC();
 #endif
 }
 

@@ -65,6 +65,8 @@ target_sources(SOURCES
         Inc/common.h
         Inc/dshot.h
         Inc/firmwareversion.h
+        Inc/kiss_telemetry.h
+        Inc/ntc_tables.h
         Inc/functions.h
         Inc/signal.h
         Inc/sounds.h
