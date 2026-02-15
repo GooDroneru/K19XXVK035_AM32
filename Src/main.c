@@ -1719,7 +1719,7 @@ int main()
     initCorePeripherals();
     enableCorePeripherals();
     loadEEpromSettings();
-    delayMillis(500);
+    delayMillis(200);
 
     PWM0->DBRED = dead_time_override;
     PWM0->DBFED = dead_time_override;
