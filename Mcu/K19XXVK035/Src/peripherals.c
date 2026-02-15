@@ -436,7 +436,7 @@ void UN_TIM2_Init(void)
 
 
     NVIC_EnableIRQ(ADC_SEQ1_IRQn);
-    NVIC_SetPriority(ADC_SEQ1_IRQn, 2);
+    NVIC_SetPriority(ADC_SEQ1_IRQn, 3);
     //DMA->USEBURSTSET_bit.CH8 = 1;
     // Инциализация контроллера DMA
 
@@ -457,7 +457,7 @@ void UN_TIM2_Init(void)
 void updateDma() {
   NVIC_DisableIRQ(DMA_CH12_IRQn); 
   NVIC_EnableIRQ(DMA_CH8_IRQn); 
-  NVIC_SetPriority(DMA_CH8_IRQn, 0xA);
+  NVIC_SetPriority(DMA_CH8_IRQn, 0x3);
   DMA->ENSET_bit.CH12 = 0;
   DMA_CONFIGDATA.PRM_DATA.CH[8].CHANNEL_CFG_bit.R_POWER = 0x0; // Количество передач до переарбитрации
   DMA_CONFIGDATA.PRM_DATA.CH[8].CHANNEL_CFG_bit.N_MINUS_1 = buffersize - 1; //Общее количество передач DMA
@@ -469,7 +469,7 @@ void updateDma() {
 void updateDmaTransmit() {
   NVIC_DisableIRQ(DMA_CH8_IRQn); 
   NVIC_EnableIRQ(DMA_CH12_IRQn); 
-  NVIC_SetPriority(DMA_CH12_IRQn, 0xA);
+  NVIC_SetPriority(DMA_CH12_IRQn, 0x3);
   DMA->ENSET_bit.CH8 = 0;
   DMA_CONFIGDATA.PRM_DATA.CH[12].CHANNEL_CFG_bit.R_POWER = 0x0; // Количество передач до переарбитрации
   DMA_CONFIGDATA.PRM_DATA.CH[12].CHANNEL_CFG_bit.N_MINUS_1 = 37-1; //Общее количество передач DMA
