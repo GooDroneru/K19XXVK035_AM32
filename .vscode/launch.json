@@ -35,7 +35,11 @@
                 "${workspaceRoot}"
             ],
             "showDevDebugOutput": "raw",
-            "svdFile": "${workspaceRoot}/K1921VK035.svd"
+            "svdFile": "${workspaceRoot}/K1921VK035.svd",
+// "postLaunchCommands": [
+//     "monitor reset halt",
+//     "monitor wp 0x20000000 4 w 2"  // Сработает только при записи значения 2
+// ]
         },
         {
             "name": "attach",

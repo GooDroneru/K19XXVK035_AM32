@@ -393,7 +393,7 @@ void UN_TIM2_Init(void)
     RCU->PRSTCFG_bit.TMR3EN = 1;
     TMR3->VALUE = 0xFFFFFFFF;
     TMR3->LOAD = 0xFFFFFFFF;
-    TMR3->CTRL_bit.ON = 1;
+    //TMR3->CTRL_bit.ON = 1;
 
     DMA->BASEPTR = (uint32_t)(&DMA_CONFIGDATA); 
 
@@ -451,7 +451,7 @@ void UN_TIM2_Init(void)
     DMA_ChannelMuxConfig(DMA_ChannelMux_12, DMA_ChannelMux_12_TMR3);
     DMA->ENSET_bit.CH8 = 0; //Включаем канала DMA 1 
     DMA->ENSET_bit.CH12 = 0; //Включаем канала DMA 1 
-    DMA->CFG_bit.MASTEREN = 1; //Бит разрешения работы контролера DMA
+   // DMA->CFG_bit.MASTEREN = 1; //Бит разрешения работы контролера DMA
 }
 
 void updateDma() {

@@ -26,8 +26,8 @@ SET(CMAKE_MODULE_LINKER_FLAGS "-mthumb -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fp
 SET(CMAKE_SHARED_LINKER_FLAGS "-mthumb -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16" CACHE STRING "shared linker flags")
 
 #-- Debug flags ----------------------------------------------------------------
-SET(CMAKE_C_FLAGS_DEBUG "-g -Og -DDEBUG" CACHE STRING "c compiler flags debug")
-SET(CMAKE_CXX_FLAGS_DEBUG "-g -Og -DDEBUG" CACHE STRING "c++ compiler flags debug")
+SET(CMAKE_C_FLAGS_DEBUG "-g -O0 -DDEBUG" CACHE STRING "c compiler flags debug")
+SET(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -DDEBUG" CACHE STRING "c++ compiler flags debug")
 SET(CMAKE_ASM_FLAGS_DEBUG "-g" CACHE STRING "assembler compiler flags debug")
 SET(CMAKE_EXE_LINKER_FLAGS_DEBUG "" CACHE STRING "linker flags debug")
 
