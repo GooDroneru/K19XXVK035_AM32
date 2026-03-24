@@ -154,7 +154,7 @@ target_compile_definitions(SOURCES INTERFACE
 )
 
 target_compile_definitions(BOOTLOADER INTERFACE 
-    #__NO_SYSTEM_INIT
+    __NO_SYSTEM_INIT
     BOOTLOADER
 )
 

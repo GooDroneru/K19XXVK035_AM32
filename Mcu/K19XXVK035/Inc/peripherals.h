@@ -52,6 +52,7 @@ void setPrescalerPWM(uint16_t presc);
 void updateDma();
 void reverseBuffer();
 void updateDmaTransmit();
+void setDmaCnt(uint8_t size);
 
 #define INTERVAL_TIMER_COUNT (getintervaTimerCount())
 #define RELOAD_WATCHDOG_COUNTER() (WDT_ITStatusClear())

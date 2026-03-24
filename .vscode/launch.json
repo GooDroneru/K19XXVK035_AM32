@@ -56,5 +56,25 @@
             "showDevDebugOutput": "raw",
             "svdFile": "${workspaceRoot}/K1921VK035.svd"
         }
+        ,
+        {
+            "name": "attach_b",
+            "cwd": "${workspaceRoot}",
+            "executable": "${workspaceRoot}/build/1.6.0_bootloader.elf",
+            "request": "attach",
+            "type": "cortex-debug",
+            "servertype": "openocd",
+            "configFiles": [
+                "scripts/connect_stlink.cfg"
+            ],
+            "device": "k1921vk035",
+            //"runToEntryPoint": "main",
+            // "rtos": "auto",
+            "searchDir": [
+                "${workspaceRoot}"
+            ],
+            "showDevDebugOutput": "raw",
+            "svdFile": "${workspaceRoot}/K1921VK035.svd"
+        }
     ]
 }

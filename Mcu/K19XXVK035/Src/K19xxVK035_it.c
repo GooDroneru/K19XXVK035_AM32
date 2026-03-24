@@ -14,6 +14,7 @@ extern void interruptRoutine();
 extern void tenKhzRoutine();
 extern void sendDshotDma();
 extern void receiveDshotDma();
+extern void processDshot();
 
 extern char send_telemetry;
 extern char telemetry_done;
@@ -133,10 +134,17 @@ __RAMFUNC void DMA_CH8_IRQHandler()
     reverseBuffer();
     transfercomplete();
     input_ready = 1;
+    //processDshot();
+    __NVIC_SetPendingIRQ(ADC_SEQ1_IRQn);
 }
 
 __RAMFUNC void DMA_CH12_IRQHandler()
 {   
     IC_TIMER_REGISTER->CMPSHDW = 0;
     transfercomplete();
+}
+
+__RAMFUNC void ADC_SEQ1_IRQHandler() {
+    ADC_SEQ_ITStatusClear(ADC_SEQ_Num_1);
+    processDshot();
 }

@@ -76,12 +76,14 @@ void playBlueJayTune()
                 duration = full_time_count * 254 + eepromBuffer.buffer[i];
                 SET_DUTY_CYCLE_ALL(0);
 				delayMillis(duration);
+                RELOAD_WATCHDOG_COUNTER();
             }
             else
             {
                 frequency = getBlueJayNoteFrequency(eepromBuffer.buffer[i + 1]);
                 duration = ((full_time_count * 254 + eepromBuffer.buffer[i]) * (100000 / frequency)) / 100;
 			    playBJNote(frequency, duration);
+                RELOAD_WATCHDOG_COUNTER();
 			}
 			full_time_count = 0;
 		}
@@ -106,14 +108,17 @@ void playStartupTune()
 	comStep(3);       // activate a pwm channel
     SET_PRESCALER_PWM(55); // frequency of beep
     delayMillis(200); // duration of beep
+    RELOAD_WATCHDOG_COUNTER();
     signaltimeout = 0;
     comStep(5);
     SET_PRESCALER_PWM(40); // next beep is higher frequency
     delayMillis(200);
+    RELOAD_WATCHDOG_COUNTER();
     signaltimeout = 0;
 	comStep(6);
     SET_PRESCALER_PWM(25); // higher again..
     delayMillis(200);
+    RELOAD_WATCHDOG_COUNTER();
 	allOff();                // turn all channels low again
     SET_PRESCALER_PWM(0); // set prescaler back to 0.
 	signaltimeout = 0;
@@ -130,15 +135,19 @@ void playBrushedStartupTune()
 	comStep(1);       // activate a pwm channel
     SET_PRESCALER_PWM(40); // frequency of beep
     delayMillis(300);         // duration of beep
+    RELOAD_WATCHDOG_COUNTER();
 	comStep(2);       // activate a pwm channel
     SET_PRESCALER_PWM(30); // frequency of beep
     delayMillis(300);         // duration of beep
+    RELOAD_WATCHDOG_COUNTER();
 	comStep(3);       // activate a pwm channel
     SET_PRESCALER_PWM(25); // frequency of beep
     delayMillis(300);         // duration of beep
+    RELOAD_WATCHDOG_COUNTER();
     comStep(4);
     SET_PRESCALER_PWM(20); // higher again..
 	delayMillis(300);
+    RELOAD_WATCHDOG_COUNTER();
 	allOff();                // turn all channels low again
     SET_PRESCALER_PWM(0); // set prescaler back to 0.
 	signaltimeout = 0;
@@ -153,20 +162,28 @@ void playDuskingTune()
 	comStep(2);       // activate a pwm channel
     SET_PRESCALER_PWM(60); // frequency of beep
     delayMillis(200);         // duration of beep
+    RELOAD_WATCHDOG_COUNTER();
     SET_PRESCALER_PWM(55); // next beep is higher frequency
 	delayMillis(150);
+    RELOAD_WATCHDOG_COUNTER();
     SET_PRESCALER_PWM(50); // higher again..
 	delayMillis(150);
+    RELOAD_WATCHDOG_COUNTER();
     SET_PRESCALER_PWM(45); // frequency of beep
     delayMillis(100);         // duration of beep
+    RELOAD_WATCHDOG_COUNTER();
     SET_PRESCALER_PWM(50); // next beep is higher frequency
 	delayMillis(100);
+    RELOAD_WATCHDOG_COUNTER();
     SET_PRESCALER_PWM(55); // higher again..
 	delayMillis(100);
+    RELOAD_WATCHDOG_COUNTER();
     SET_PRESCALER_PWM(25); // higher again..
 	delayMillis(200);
+    RELOAD_WATCHDOG_COUNTER();
     SET_PRESCALER_PWM(55); // higher again..
 	delayMillis(150);
+    RELOAD_WATCHDOG_COUNTER();
 	allOff();                // turn all channels low again
     SET_PRESCALER_PWM(0); // set prescaler back to 0.
     SET_AUTO_RELOAD_PWM(TIMER1_MAX_ARR);
@@ -181,11 +198,14 @@ void playInputTune2()
 	setCaptureCompare();
 	comStep(1);
     delayMillis(75);
+    RELOAD_WATCHDOG_COUNTER();
     SET_PRESCALER_PWM(80);
     delayMillis(75);
+    RELOAD_WATCHDOG_COUNTER();
     SET_PRESCALER_PWM(90);
     RELOAD_WATCHDOG_COUNTER();
     delayMillis(75);
+    RELOAD_WATCHDOG_COUNTER();
 	allOff();
     SET_PRESCALER_PWM(0);
 	signaltimeout = 0;
@@ -203,11 +223,14 @@ void playInputTune()
 	comStep(3);
     signaltimeout = 0;
     delayMillis(100);
+    RELOAD_WATCHDOG_COUNTER();
     SET_PRESCALER_PWM(70);
     delayMillis(100);
+    RELOAD_WATCHDOG_COUNTER();
     signaltimeout = 0;
     SET_PRESCALER_PWM(40);
     delayMillis(100);
+    RELOAD_WATCHDOG_COUNTER();
 	allOff();
     SET_PRESCALER_PWM(0);
 	signaltimeout = 0;
@@ -223,8 +246,10 @@ void playDefaultTone()
 	comStep(2);
 	delayMillis(150);
     RELOAD_WATCHDOG_COUNTER();
+    RELOAD_WATCHDOG_COUNTER();
     SET_PRESCALER_PWM(30);
 	delayMillis(150);
+    RELOAD_WATCHDOG_COUNTER();
 	allOff();
     SET_PRESCALER_PWM(0);
 	signaltimeout = 0;
@@ -239,8 +264,10 @@ void playChangedTone()
 	comStep(2);
 	delayMillis(150);
     RELOAD_WATCHDOG_COUNTER();
+    RELOAD_WATCHDOG_COUNTER();
     SET_PRESCALER_PWM(80);
 	delayMillis(150);
+    RELOAD_WATCHDOG_COUNTER();
 	allOff();
     SET_PRESCALER_PWM(0);
 	signaltimeout = 0;
@@ -258,6 +285,7 @@ void playBeaconTune3()
         comStep(i / 20);
         SET_PRESCALER_PWM(10 + (i / 2));
 		delayMillis(10);
+        RELOAD_WATCHDOG_COUNTER();
 	}
 	allOff();
     SET_PRESCALER_PWM(0);

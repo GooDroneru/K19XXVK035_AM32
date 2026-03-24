@@ -1,4 +1,4 @@
-
+3
 /* AM32- multi-purpose brushless controller firmware for the stm32f051 */
 
 //===========================================================================
@@ -508,6 +508,7 @@ char step = 1;
 uint32_t commutation_interval = 12500;
 uint16_t waitTime = 0;
 uint16_t signaltimeout = 0;
+uint8_t multirotor = 0;
 
 float doPidCalculations(struct fastPID* pidnow, int actual, int target)
 {
@@ -1701,7 +1702,12 @@ int main()
     }
     else if(hardwareInfo.deviceId[3] == '1') //20R
     {
-        deadTime = 90;
+        deadTime = 60;
+    }
+
+
+    if(hardwareInfo.deviceId[11] == 'M') {
+        multirotor = 1;
     }
 
     gate_drive_offset = deadTime;
@@ -1713,7 +1719,7 @@ int main()
     initCorePeripherals();
     enableCorePeripherals();
     loadEEpromSettings();
-    delayMillis(1000);
+    delayMillis(200);
 
     PWM0->DBRED = dead_time_override;
     PWM0->DBFED = dead_time_override;
@@ -1793,7 +1799,7 @@ int main()
         eepromBuffer.comp_pwm = 1;
         //playStartupTune();
         eepromBuffer.advance_level = 2;
-        motor_kv = 300;
+        motor_kv = 2200;
         eepromBuffer.motor_poles = 14;
         eepromBuffer.stall_protection = 0;
         eepromBuffer.brake_on_stop = 1;
@@ -1808,16 +1814,21 @@ int main()
         min_startup_duty = (minStartupDuty + DEAD_TIME) * TIMER1_MAX_ARR / 2000;
         minimum_duty_cycle = (minStartupDuty/ 2 + DEAD_TIME/3) * TIMER1_MAX_ARR / 2000 ;
         stall_protect_minimum_duty = minimum_duty_cycle+10;
-        //eepromBuffer.use_sine_start = 1;
-        eepromBuffer.use_sine_start = 0;
+        eepromBuffer.use_sine_start = 1;
+        //eepromBuffer.use_sine_start = 0;
         servo_low_threshold = 1100;
         servo_high_threshold = 1900;
         dshot = 1;
         servoPwm = 0;
         EDT_ARMED = 1;
+        eepromBuffer.no_polling_start = 1;
 #endif
 
-
+#ifndef DEBUG_MODE
+    zero_input_count = 0;
+    MX_IWDG_Init();
+    RELOAD_WATCHDOG_COUNTER();
+#endif
 #ifdef USE_CRSF_INPUT
 	inputSet = 1;
 	playStartupTune();
@@ -1850,11 +1861,7 @@ int main()
         #else
     playStartupTune();
         #endif
-        #ifndef DEBUG_MODE
-            zero_input_count = 0;
-            MX_IWDG_Init();
-            RELOAD_WATCHDOG_COUNTER();
-        #endif
+
 
         #ifdef GIMBAL_MODE
             eepromBuffer.bi_direction = 1;
@@ -1866,30 +1873,6 @@ int main()
         inputSet = 1;
 
         #else
-    // checkForHighSignal();     // will reboot if signal line is high for 10ms
-    
-    // if(!servoPwm)
-    // {
-    //     uint32_t bdshotCheck = 0;
-    //     for(uint32_t i = 0; i < 1500; i++)
-    //     {
-    //         if(getInputPinState())
-    //         {
-    //             //GPIOB->DATAOUTSET = 0x2000;
-    //             bdshotCheck++;
-    //         }
-    //         else
-    //         {
-    //             //GPIOB->DATAOUTCLR = 0x2000;
-    //             bdshotCheck = 0;
-    //         }
-    //         if(bdshotCheck > 500)
-    //         {
-    //             fallingEdgeTrigger = 1;
-    //             break;
-    //         }
-    //     }
-    // }
 
     receiveDshotDma();
 
@@ -1904,11 +1887,11 @@ int main()
 
     while (1)
     {
-        if (input_ready)
-        {
-            processDshot();
-            input_ready = 0;
-        }
+        // if (input_ready)
+        // {
+        //     processDshot();
+        //     input_ready = 0;
+        // }
         RELOAD_WATCHDOG_COUNTER();
         e_com_time = ((commutation_intervals[0] + commutation_intervals[1] + commutation_intervals[2] + commutation_intervals[3] + commutation_intervals[4] + commutation_intervals[5]) + 4) >> 1; // COMMUTATION INTERVAL IS 0.5US INCREMENTS
         if (eepromBuffer.variable_pwm)
@@ -1963,7 +1946,7 @@ int main()
                 dshot_extended_telemetry = 2;
                 break;
             case 2:
-                send_extended_dshot = 0b0110 << 8 | (uint8_t)actual_current / 50;
+                send_extended_dshot = 0b0110 << 8 | (uint8_t)(actual_current / 50);
                 dshot_extended_telemetry = 3;
                 break;
             case 3:
@@ -2048,8 +2031,10 @@ int main()
         ADC_SEQ_SwStartCmd();
         degrees_celsius = getConvertedDegrees();
         battery_voltage = (/*(7 * battery_voltage) + */((ADC_raw_volts * 3300 / 4095 * VOLTAGE_DIVIDER) / 100))/* >> 3*/;
-        smoothed_raw_current = getSmoothedCurrent();
-        actual_current = ((smoothed_raw_current * 3300 / 41) - (CURRENT_OFFSET * 100)) / (MILLIVOLT_PER_AMP);
+        if(!multirotor) {
+            smoothed_raw_current = getSmoothedCurrent();
+            actual_current = ((smoothed_raw_current * 3300 / 41) - (CURRENT_OFFSET * 100)) / (MILLIVOLT_PER_AMP);
+        }
         // uint16_t seqDelay = ((PWM0->CMPA_bit.CMPA * 2) / 3) + 1;
         // if(!eepromBuffer.variable_pwm) {
         //     if(PWM0->TBCTL_bit.CLKDIV == PWM_TBCTL_CLKDIV_Div1) {
