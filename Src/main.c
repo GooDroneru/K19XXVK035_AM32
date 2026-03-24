@@ -1,4 +1,4 @@
-
+3
 /* AM32- multi-purpose brushless controller firmware for the stm32f051 */
 
 //===========================================================================
@@ -1946,7 +1946,7 @@ int main()
                 dshot_extended_telemetry = 2;
                 break;
             case 2:
-                send_extended_dshot = 0b0110 << 8 | (uint8_t)actual_current / 50;
+                send_extended_dshot = 0b0110 << 8 | (uint8_t)(actual_current / 50);
                 dshot_extended_telemetry = 3;
                 break;
             case 3:
